@@ -46,7 +46,6 @@ export default function LiveFootballCard() {
   function nomeTime(time) {
     return (
       time?.shortName ||
-      time?.tla ||
       time?.name ||
       "Time"
     );
@@ -63,136 +62,178 @@ export default function LiveFootballCard() {
     });
   }
 
-  const flags = {
-    BRA: "🇧🇷",
-    ARG: "🇦🇷",
-    URU: "🇺🇾",
-    KSA: "🇸🇦",
-    FRA: "🇫🇷",
-    GER: "🇩🇪",
-    ENG: "🏴",
-    ESP: "🇪🇸",
-    ITA: "🇮🇹",
-    POR: "🇵🇹",
-    BEL: "🇧🇪",
-    NED: "🇳🇱",
-    SWE: "🇸🇪",
-    TUN: "🇹🇳",
-    IRI: "🇮🇷",
-    NZL: "🇳🇿",
-    SEN: "🇸🇳",
-    CRO: "🇭🇷",
-    USA: "🇺🇸",
-    MEX: "🇲🇽",
-    CAN: "🇨🇦",
-    JPN: "🇯🇵",
-    KOR: "🇰🇷",
-    COL: "🇨🇴",
-    ECU: "🇪🇨",
-    CIV: "🇨🇮",
-    MAR: "🇲🇦",
-    SCO: "🏴",
-    NOR: "🇳🇴",
-    IRQ: "🇮🇶",
-    GHA: "🇬🇭",
-    PAN: "🇵🇦",
-    AUT: "🇦🇹",
-    DZA: "🇩🇿",
-  };
+  function getFlagUrl(team) {
+    const countryMap = {
+      "Saudi Arabia": "sa",
+      Uruguay: "uy",
+      Iran: "ir",
+      "New Zealand": "nz",
+      France: "fr",
+      Senegal: "sn",
+      Brazil: "br",
+      Argentina: "ar",
+      Spain: "es",
+      Portugal: "pt",
+      Germany: "de",
+      Belgium: "be",
+      England: "gb",
+      Croatia: "hr",
+      Morocco: "ma",
+      Japan: "jp",
+      Sweden: "se",
+      Tunisia: "tn",
+      Ecuador: "ec",
+      "Ivory Coast": "ci",
+      Norway: "no",
+      Iraq: "iq",
+      Ghana: "gh",
+      Panama: "pa",
+      Austria: "at",
+      Algeria: "dz",
+      Mexico: "mx",
+      Canada: "ca",
+      Qatar: "qa",
+      Switzerland: "ch",
+      Scotland: "gb",
+      Haiti: "ht",
+      Australia: "au",
+      Turkey: "tr",
+      Paraguay: "py",
+      USA: "us",
+      Colombia: "co",
+    };
 
-  function bandeira(time) {
-    return flags[time?.tla] || "⚽";
+    const code = countryMap[team?.name];
+
+    if (!code) return null;
+
+    return `https://flagcdn.com/w40/${code}.png`;
   }
 
   if (loading) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[340px] flex items-center justify-center">
-        <span className="text-zinc-400">
+      <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+        <div className="text-center text-zinc-400">
           Carregando futebol...
-        </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[340px]">
-      <h3 className="text-yellow-500 text-xl font-bold mb-4">
+    <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+
+      <h3 className="text-yellow-500 text-xl font-bold mb-3">
         ⚽ Central do Futebol
       </h3>
 
       {liveMatch ? (
-        <div className="bg-black rounded-xl p-5 border border-red-500/20">
+        <div className="bg-black rounded-xl p-4 border border-red-500/20">
 
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-yellow-500 font-bold text-sm">
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-yellow-500 text-xs font-bold">
               🏆 {liveMatch.competition?.name}
             </div>
 
-            <div className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-              🔴 AO VIVO
+            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+              AO VIVO
             </div>
           </div>
 
-          <div className="text-center">
+          <div className="grid grid-cols-3 items-center text-center">
 
-            <div className="text-xl font-bold">
-              {bandeira(liveMatch.homeTeam)}{" "}
-              {nomeTime(liveMatch.homeTeam)}
+            <div>
+              {getFlagUrl(liveMatch.homeTeam) && (
+                <img
+                  src={getFlagUrl(liveMatch.homeTeam)}
+                  className="w-8 h-6 mx-auto mb-1 rounded"
+                  alt=""
+                />
+              )}
+
+              <div className="font-bold text-sm">
+                {nomeTime(liveMatch.homeTeam)}
+              </div>
             </div>
 
-            <div className="text-5xl font-bold text-red-500 my-4">
+            <div className="text-3xl font-bold text-red-500">
               {liveMatch.score?.fullTime?.home ?? 0}
               {" - "}
               {liveMatch.score?.fullTime?.away ?? 0}
             </div>
 
-            <div className="text-xl font-bold">
-              {bandeira(liveMatch.awayTeam)}{" "}
-              {nomeTime(liveMatch.awayTeam)}
+            <div>
+              {getFlagUrl(liveMatch.awayTeam) && (
+                <img
+                  src={getFlagUrl(liveMatch.awayTeam)}
+                  className="w-8 h-6 mx-auto mb-1 rounded"
+                  alt=""
+                />
+              )}
+
+              <div className="font-bold text-sm">
+                {nomeTime(liveMatch.awayTeam)}
+              </div>
             </div>
 
           </div>
 
         </div>
-      ) : nextMatches.length > 0 ? (
-        <div>
+      ) : (
+        <>
 
-          <div className="text-yellow-500 font-bold mb-3">
+          <div className="text-yellow-500 font-bold mb-2">
             📅 Próximos Jogos
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
 
             {nextMatches.map((match) => (
               <div
                 key={match.id}
-                className="bg-black rounded-xl p-4 border border-zinc-800"
+                className="bg-black rounded-xl p-3 border border-zinc-800"
               >
-                <div className="text-xs text-yellow-500 font-bold mb-3">
+                <div className="text-yellow-500 text-xs font-bold mb-2">
                   🏆 {match.competition?.name}
                 </div>
 
                 <div className="grid grid-cols-3 items-center text-center">
 
-                  <div className="font-bold text-lg">
-                    {bandeira(match.homeTeam)}
-                    <br />
-                    {nomeTime(match.homeTeam)}
+                  <div>
+                    {getFlagUrl(match.homeTeam) && (
+                      <img
+                        src={getFlagUrl(match.homeTeam)}
+                        className="w-7 h-5 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
+
+                    <div className="font-semibold text-sm">
+                      {nomeTime(match.homeTeam)}
+                    </div>
                   </div>
 
-                  <div className="text-zinc-500 font-bold">
+                  <div className="text-zinc-500 text-xs font-bold">
                     VS
                   </div>
 
-                  <div className="font-bold text-lg">
-                    {bandeira(match.awayTeam)}
-                    <br />
-                    {nomeTime(match.awayTeam)}
+                  <div>
+                    {getFlagUrl(match.awayTeam) && (
+                      <img
+                        src={getFlagUrl(match.awayTeam)}
+                        className="w-7 h-5 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
+
+                    <div className="font-semibold text-sm">
+                      {nomeTime(match.awayTeam)}
+                    </div>
                   </div>
 
                 </div>
 
-                <div className="text-center text-yellow-500 text-sm mt-4">
+                <div className="text-center text-yellow-500 text-xs mt-2">
                   🕒 {formatarData(match.utcDate)}
                 </div>
 
@@ -201,24 +242,9 @@ export default function LiveFootballCard() {
 
           </div>
 
-        </div>
-      ) : (
-        <div className="bg-black rounded-xl p-6 text-center">
-
-          <div className="text-5xl mb-3">
-            ⚽
-          </div>
-
-          <div className="font-bold text-lg">
-            Nenhuma partida encontrada
-          </div>
-
-          <div className="text-zinc-400 text-sm mt-2">
-            Não existem jogos ao vivo ou agendados no momento.
-          </div>
-
-        </div>
+        </>
       )}
+
     </div>
   );
 }
