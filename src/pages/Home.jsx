@@ -5,8 +5,6 @@ import BarCoinsCard from "../components/BarCoinsCard";
 
 import TopMusicCard from "../components/TopMusicCard";
 import LiveFootballCard from "../components/LiveFootballCard";
-
-import FootballCard from "../components/FootballCard";
 import LatestNewsCard from "../components/LatestNewsCard";
 
 import MusicCard from "../components/MusicCard";
@@ -49,7 +47,6 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-3">
-            <FootballCard />
           </div>
         </div>
       </div>
