@@ -39,7 +39,6 @@ export async function buscarCanais() {
     .from("canais_tv")
     .select("*")
     .eq("ativo", true)
-    .order("prioridade", { ascending: true })
     .order("id", { ascending: true });
 
   if (error) {
@@ -56,7 +55,6 @@ export async function buscarCanaisPorCategoria(categoria) {
     .select("*")
     .eq("ativo", true)
     .eq("categoria", categoria)
-    .order("prioridade", { ascending: true })
     .order("id", { ascending: true });
 
   if (error) {
@@ -73,7 +71,6 @@ export async function buscarDestaqueHome() {
     .select("*")
     .eq("ativo", true)
     .eq("destaque_home", true)
-    .order("prioridade", { ascending: true })
     .limit(1)
     .maybeSingle();
 
