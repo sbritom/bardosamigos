@@ -12,7 +12,7 @@ export default function LiveFootballCard() {
 
     const interval = setInterval(() => {
       carregarJogos();
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -20,7 +20,6 @@ export default function LiveFootballCard() {
   async function carregarJogos() {
     try {
       const matches = await getLiveMatches();
-
       const agora = new Date();
 
       const aoVivo = matches.filter((m) => {
@@ -29,8 +28,7 @@ export default function LiveFootballCard() {
         return (
           m.status === "IN_PLAY" ||
           m.status === "PAUSED" ||
-          (["TIMED", "SCHEDULED"].includes(m.status) &&
-            dataJogo <= agora)
+          (["TIMED", "SCHEDULED"].includes(m.status) && dataJogo <= agora)
         );
       });
 
@@ -39,8 +37,7 @@ export default function LiveFootballCard() {
           const dataJogo = new Date(m.utcDate);
 
           return (
-            ["TIMED", "SCHEDULED"].includes(m.status) &&
-            dataJogo > agora
+            ["TIMED", "SCHEDULED"].includes(m.status) && dataJogo > agora
           );
         })
         .slice(0, 3);
@@ -52,7 +49,6 @@ export default function LiveFootballCard() {
       setLiveMatches(aoVivo.slice(0, 3));
       setFinishedMatches(recentes);
       setNextMatches(proximos);
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -61,12 +57,57 @@ export default function LiveFootballCard() {
   }
 
   function nomeCurto(team) {
-    return (
-      team?.tla ||
-      team?.shortName ||
-      team?.name?.substring(0, 3)?.toUpperCase() ||
-      "???"
-    );
+    const traducoes = {
+      "Saudi Arabia": "Arábia Saudita",
+      Uruguay: "Uruguai",
+      Sweden: "Suécia",
+      Tunisia: "Tunísia",
+      Spain: "Espanha",
+      "Cape Verde": "Cabo Verde",
+      Iran: "Irã",
+      "New Zealand": "Nova Zelândia",
+      France: "França",
+      Senegal: "Senegal",
+      Belgium: "Bélgica",
+      Egypt: "Egito",
+      Brazil: "Brasil",
+      Argentina: "Argentina",
+      Germany: "Alemanha",
+      Japan: "Japão",
+      Portugal: "Portugal",
+      England: "Inglaterra",
+      Croatia: "Croácia",
+      Colombia: "Colômbia",
+      Morocco: "Marrocos",
+      Ecuador: "Equador",
+      Paraguay: "Paraguai",
+      Mexico: "México",
+      Canada: "Canadá",
+      USA: "Estados Unidos",
+      Norway: "Noruega",
+      Iraq: "Iraque",
+      Austria: "Áustria",
+      Algeria: "Argélia",
+      Ghana: "Gana",
+      Panama: "Panamá",
+      Qatar: "Catar",
+      Switzerland: "Suíça",
+      Scotland: "Escócia",
+      Haiti: "Haiti",
+      Australia: "Austrália",
+      Turkey: "Turquia",
+      Jordan: "Jordânia",
+      "DR Congo": "RD Congo",
+      Uzbekistan: "Uzbequistão",
+      Czechia: "República Tcheca",
+      "South Africa": "África do Sul",
+      "South Korea": "Coreia do Sul",
+      "Bosnia and Herzegovina": "Bósnia e Herzegovina",
+      Curacao: "Curaçao",
+      "Ivory Coast": "Costa do Marfim",
+    };
+
+    return traducoes[team?.name] || team?.shortName || team?.name || "Time";
   }
 
   function placarCasa(match) {
@@ -105,6 +146,26 @@ export default function LiveFootballCard() {
       Canada: "ca",
       Paraguay: "py",
       Colombia: "co",
+      Norway: "no",
+      Iraq: "iq",
+      Austria: "at",
+      Algeria: "dz",
+      Ghana: "gh",
+      Panama: "pa",
+      Qatar: "qa",
+      Switzerland: "ch",
+      Scotland: "gb",
+      Haiti: "ht",
+      Australia: "au",
+      Turkey: "tr",
+      Jordan: "jo",
+      Uzbekistan: "uz",
+      Czechia: "cz",
+      "South Africa": "za",
+      "South Korea": "kr",
+      "Bosnia and Herzegovina": "ba",
+      Curacao: "cw",
+      "Ivory Coast": "ci",
     };
 
     const code = countryMap[team?.name];
@@ -133,19 +194,15 @@ export default function LiveFootballCard() {
 
   return (
     <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-
       <h3 className="text-yellow-500 text-xl font-bold mb-3">
         ⚽ Central do Futebol
       </h3>
 
       <div className="text-cyan-400 text-xs font-bold mb-3 uppercase">
-        {mostrarAoVivo
-          ? "🔵 AO VIVO / RECENTES"
-          : "📅 PRÓXIMOS JOGOS"}
+        {mostrarAoVivo ? "🔵 AO VIVO / RECENTES" : "📅 PRÓXIMOS JOGOS"}
       </div>
 
       <div className="space-y-2">
-
         {mostrarAoVivo ? (
           <>
             {liveMatches.map((match) => (
@@ -154,9 +211,7 @@ export default function LiveFootballCard() {
                 className="bg-black border border-yellow-500/40 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between">
-
                   <div className="w-20 text-center">
-
                     {getFlagUrl(match.homeTeam) && (
                       <img
                         src={getFlagUrl(match.homeTeam)}
@@ -165,14 +220,12 @@ export default function LiveFootballCard() {
                       />
                     )}
 
-                    <div className="font-bold text-white">
+                    <div className="font-bold text-white text-xs leading-tight">
                       {nomeCurto(match.homeTeam)}
                     </div>
-
                   </div>
 
                   <div className="text-center">
-
                     <div className="text-3xl font-bold text-yellow-500">
                       {placarCasa(match)} : {placarFora(match)}
                     </div>
@@ -180,11 +233,9 @@ export default function LiveFootballCard() {
                     <div className="text-xs text-green-500 font-bold mt-1">
                       🟢 AO VIVO
                     </div>
-
                   </div>
 
                   <div className="w-20 text-center">
-
                     {getFlagUrl(match.awayTeam) && (
                       <img
                         src={getFlagUrl(match.awayTeam)}
@@ -193,12 +244,10 @@ export default function LiveFootballCard() {
                       />
                     )}
 
-                    <div className="font-bold text-white">
+                    <div className="font-bold text-white text-xs leading-tight">
                       {nomeCurto(match.awayTeam)}
                     </div>
-
                   </div>
-
                 </div>
               </div>
             ))}
@@ -209,9 +258,7 @@ export default function LiveFootballCard() {
                 className="bg-black border border-zinc-700 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between">
-
                   <div className="w-20 text-center">
-
                     {getFlagUrl(match.homeTeam) && (
                       <img
                         src={getFlagUrl(match.homeTeam)}
@@ -220,26 +267,20 @@ export default function LiveFootballCard() {
                       />
                     )}
 
-                    <div className="font-bold text-white">
+                    <div className="font-bold text-white text-xs leading-tight">
                       {nomeCurto(match.homeTeam)}
                     </div>
-
                   </div>
 
                   <div className="text-center">
-
                     <div className="text-3xl font-bold text-white">
                       {placarCasa(match)} : {placarFora(match)}
                     </div>
 
-                    <div className="text-xs text-zinc-400 mt-1">
-                      FINAL
-                    </div>
-
+                    <div className="text-xs text-zinc-400 mt-1">FINAL</div>
                   </div>
 
                   <div className="w-20 text-center">
-
                     {getFlagUrl(match.awayTeam) && (
                       <img
                         src={getFlagUrl(match.awayTeam)}
@@ -248,12 +289,10 @@ export default function LiveFootballCard() {
                       />
                     )}
 
-                    <div className="font-bold text-white">
+                    <div className="font-bold text-white text-xs leading-tight">
                       {nomeCurto(match.awayTeam)}
                     </div>
-
                   </div>
-
                 </div>
               </div>
             ))}
@@ -265,9 +304,7 @@ export default function LiveFootballCard() {
               className="bg-black border border-zinc-700 rounded-xl p-3"
             >
               <div className="flex items-center justify-between">
-
                 <div className="w-20 text-center">
-
                   {getFlagUrl(match.homeTeam) && (
                     <img
                       src={getFlagUrl(match.homeTeam)}
@@ -276,26 +313,20 @@ export default function LiveFootballCard() {
                     />
                   )}
 
-                  <div className="font-bold text-white">
+                  <div className="font-bold text-white text-xs leading-tight">
                     {nomeCurto(match.homeTeam)}
                   </div>
-
                 </div>
 
                 <div className="text-center">
-
-                  <div className="text-yellow-500 font-bold">
-                    VS
-                  </div>
+                  <div className="text-yellow-500 font-bold">VS</div>
 
                   <div className="text-xs text-zinc-400 mt-1">
                     🕒 {horaJogo(match.utcDate)}
                   </div>
-
                 </div>
 
                 <div className="w-20 text-center">
-
                   {getFlagUrl(match.awayTeam) && (
                     <img
                       src={getFlagUrl(match.awayTeam)}
@@ -304,19 +335,15 @@ export default function LiveFootballCard() {
                     />
                   )}
 
-                  <div className="font-bold text-white">
+                  <div className="font-bold text-white text-xs leading-tight">
                     {nomeCurto(match.awayTeam)}
                   </div>
-
                 </div>
-
               </div>
             </div>
           ))
         )}
-
       </div>
-
     </div>
   );
 }
