@@ -5,6 +5,8 @@ export default function TvAoVivoCard() {
   const [canalAtual, setCanalAtual] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
+  const atalhos = ["Música", "Filmes", "Eventos", "Futebol"];
+
   useEffect(() => {
     carregar();
   }, []);
@@ -19,11 +21,7 @@ export default function TvAoVivoCard() {
         (canal) => canal.destaque_home === true
       );
 
-      if (destaques.length > 0) {
-        setCanalAtual(destaques[0]);
-      } else {
-        setCanalAtual(canais[0] || null);
-      }
+      setCanalAtual(destaques[0] || canais[0] || null);
     } catch (error) {
       console.error("Erro ao carregar TV:", error);
     } finally {
@@ -31,9 +29,13 @@ export default function TvAoVivoCard() {
     }
   }
 
+  function abrirTv(categoria) {
+    window.location.href = `/tv?categoria=${encodeURIComponent(categoria)}`;
+  }
+
   if (carregando) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[420px] flex items-center justify-center">
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[515px] flex items-center justify-center">
         <div className="text-zinc-400">Carregando TV...</div>
       </div>
     );
@@ -41,16 +43,14 @@ export default function TvAoVivoCard() {
 
   if (!canalAtual) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[420px] flex items-center justify-center">
-        <div className="text-zinc-400">
-          Nenhuma transmissão disponível.
-        </div>
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[515px] flex items-center justify-center">
+        <div className="text-zinc-400">Nenhuma transmissão disponível.</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-red-500/20 h-full">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-red-500/20 h-full min-h-[515px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-red-500 text-xl font-bold">
           📺 TV Ao Vivo
@@ -87,6 +87,22 @@ export default function TvAoVivoCard() {
             canalAtual.descricao ||
             "Transmissão ao vivo"}
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mt-auto pt-5">
+        {atalhos.map((item) => (
+          <button
+            key={item}
+            onClick={() => abrirTv(item)}
+            className={`border rounded-lg p-2 text-sm transition-all ${
+              item === "Futebol"
+                ? "bg-yellow-500 text-black border-yellow-500 font-bold"
+                : "bg-black border-zinc-700 hover:border-yellow-500"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
       </div>
     </div>
   );
