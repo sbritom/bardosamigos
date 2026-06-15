@@ -2,56 +2,64 @@ import { useEffect, useState } from "react";
 import { getLiveMatches } from "../services/footballService";
 
 export default function LiveFootballCard() {
-  const [live, setLive] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [finished, setFinished] = useState([]);
+  const [liveMatch, setLiveMatch] = useState(null);
+  const [nextMatches, setNextMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadMatches();
+    carregarJogos();
 
     const interval = setInterval(() => {
-      loadMatches();
+      carregarJogos();
     }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
-  async function loadMatches() {
+  async function carregarJogos() {
     try {
       const matches = await getLiveMatches();
 
-      setLive(
-        matches.filter(
-          (m) =>
-            m.status === "IN_PLAY" ||
-            m.status === "PAUSED"
-        ).slice(0, 1)
+      const live = matches.find(
+        (m) =>
+          m.status === "IN_PLAY" ||
+          m.status === "PAUSED"
       );
 
-      setUpcoming(
-        matches.filter(
+      const upcoming = matches
+        .filter(
           (m) =>
             m.status === "SCHEDULED" ||
             m.status === "TIMED"
-        ).slice(0, 1)
-      );
+        )
+        .slice(0, 3);
 
-      setFinished(
-        matches.filter(
-          (m) => m.status === "FINISHED"
-        ).slice(0, 1)
-      );
+      setLiveMatch(live || null);
+      setNextMatches(upcoming);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
-  function renderMatch(match) {
-    if (!match) return "Nenhum jogo";
+  function nomeTime(time) {
+    return (
+      time?.shortName ||
+      time?.tla ||
+      time?.name ||
+      "Time"
+    );
+  }
 
-    return `${match.homeTeam.shortName || match.homeTeam.name} x ${
-      match.awayTeam.shortName || match.awayTeam.name
-    }`;
+  if (loading) {
+    return (
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[260px] flex items-center justify-center">
+        <span className="text-zinc-400">
+          Carregando partidas...
+        </span>
+      </div>
+    );
   }
 
   return (
@@ -60,39 +68,80 @@ export default function LiveFootballCard() {
         ⚽ Futebol Agora
       </h3>
 
-      <div className="space-y-3">
+      {liveMatch ? (
+        <div className="bg-black rounded-xl p-4 border border-red-500/20">
 
-        <div className="bg-black rounded-xl p-3">
-          <div className="text-green-500 text-sm font-bold mb-1">
-            🔴 Jogos Ao Vivo
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-yellow-500 font-bold">
+              🏆 {liveMatch.competition?.name}
+            </div>
+
+            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+              AO VIVO
+            </div>
           </div>
 
-          <div className="text-sm">
-            {renderMatch(live[0])}
+          <div className="text-center">
+
+            <div className="text-lg font-bold">
+              {nomeTime(liveMatch.homeTeam)}
+            </div>
+
+            <div className="text-3xl font-bold text-red-500 my-2">
+              {liveMatch.score?.fullTime?.home ?? 0}
+              {" - "}
+              {liveMatch.score?.fullTime?.away ?? 0}
+            </div>
+
+            <div className="text-lg font-bold">
+              {nomeTime(liveMatch.awayTeam)}
+            </div>
+
           </div>
+
         </div>
+      ) : nextMatches.length > 0 ? (
+        <div className="space-y-3">
 
-        <div className="bg-black rounded-xl p-3">
-          <div className="text-yellow-500 text-sm font-bold mb-1">
+          <div className="text-yellow-500 font-bold">
             📅 Próximos Jogos
           </div>
 
-          <div className="text-sm">
-            {renderMatch(upcoming[0])}
-          </div>
+          {nextMatches.map((match) => (
+            <div
+              key={match.id}
+              className="bg-black rounded-xl p-3"
+            >
+              <div className="text-sm text-zinc-400 mb-1">
+                {match.competition?.name}
+              </div>
+
+              <div className="font-semibold">
+                {nomeTime(match.homeTeam)}
+                {" x "}
+                {nomeTime(match.awayTeam)}
+              </div>
+            </div>
+          ))}
+
         </div>
+      ) : (
+        <div className="bg-black rounded-xl p-6 text-center">
 
-        <div className="bg-black rounded-xl p-3">
-          <div className="text-blue-400 text-sm font-bold mb-1">
-            🏁 Últimos Resultados
+          <div className="text-5xl mb-3">
+            ⚽
           </div>
 
-          <div className="text-sm">
-            {renderMatch(finished[0])}
+          <div className="font-bold text-lg">
+            Nenhum jogo encontrado
           </div>
+
+          <div className="text-zinc-400 text-sm mt-2">
+            Não há partidas ao vivo ou agendadas no momento.
+          </div>
+
         </div>
-
-      </div>
+      )}
     </div>
   );
 }
