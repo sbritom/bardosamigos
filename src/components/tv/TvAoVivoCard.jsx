@@ -5,8 +5,6 @@ export default function TvAoVivoCard() {
   const [canalAtual, setCanalAtual] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
-  const atalhos = ["Música", "Filmes", "Eventos", "Futebol"];
-
   useEffect(() => {
     carregar();
   }, []);
@@ -35,7 +33,7 @@ export default function TvAoVivoCard() {
 
   if (carregando) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[515px] flex items-center justify-center">
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[500px] flex items-center justify-center">
         <div className="text-zinc-400">Carregando TV...</div>
       </div>
     );
@@ -43,14 +41,16 @@ export default function TvAoVivoCard() {
 
   if (!canalAtual) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[515px] flex items-center justify-center">
-        <div className="text-zinc-400">Nenhuma transmissão disponível.</div>
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full min-h-[500px] flex items-center justify-center">
+        <div className="text-zinc-400">
+          Nenhuma transmissão disponível.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-red-500/20 h-full min-h-[515px] flex flex-col">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-red-500/20 h-full min-h-[500px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-red-500 text-xl font-bold">
           📺 TV Ao Vivo
@@ -79,30 +79,42 @@ export default function TvAoVivoCard() {
 
       <div className="mt-4">
         <div className="font-bold text-yellow-500 text-lg">
-          🔴 {canalAtual.nome}
+          🔴 {canalAtual.titulo_transmissao || "Transmissão ao Vivo"}
         </div>
 
         <div className="text-zinc-400 text-sm mt-1">
-          {canalAtual.titulo_transmissao ||
-            canalAtual.descricao ||
-            "Transmissão ao vivo"}
+          {canalAtual.categoria || "TV Bar dos Amigos"}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-auto pt-5">
-        {atalhos.map((item) => (
-          <button
-            key={item}
-            onClick={() => abrirTv(item)}
-            className={`border rounded-lg p-2 text-sm transition-all ${
-              item === "Futebol"
-                ? "bg-yellow-500 text-black border-yellow-500 font-bold"
-                : "bg-black border-zinc-700 hover:border-yellow-500"
-            }`}
-          >
-            {item}
-          </button>
-        ))}
+        <button
+          onClick={() => abrirTv("Música")}
+          className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-3 text-sm transition-all"
+        >
+          Música
+        </button>
+
+        <button
+          onClick={() => abrirTv("Filmes")}
+          className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-3 text-sm transition-all"
+        >
+          Filmes
+        </button>
+
+        <button
+          onClick={() => abrirTv("Eventos")}
+          className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-3 text-sm transition-all"
+        >
+          Eventos
+        </button>
+
+        <button
+          onClick={() => abrirTv("Futebol")}
+          className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-3 text-sm transition-all"
+        >
+          Futebol
+        </button>
       </div>
     </div>
   );
