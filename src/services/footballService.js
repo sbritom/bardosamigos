@@ -2,18 +2,24 @@ const API_KEY = import.meta.env.VITE_FOOTBALL_API_KEY;
 
 export async function getLiveMatches() {
   try {
-    const response = await fetch(
-      "https://api.football-data.org/v4/matches",
-      {
-        headers: {
-          "X-Auth-Token": API_KEY,
-        },
-      }
-    );
+    const isLocal =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
 
+    const url = isLocal
+      ? "https://api.football-data.org/v4/matches"
+      : "/api/football";
+
+    const options = isLocal
+      ? {
+          headers: {
+            "X-Auth-Token": API_KEY,
+          },
+        }
+      : {};
+
+    const response = await fetch(url, options);
     const data = await response.json();
-
-    console.log("FOOTBALL API:", data);
 
     return data.matches || [];
   } catch (error) {
