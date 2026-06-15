@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { buscarRanking } from "../services/barCoinsService";
+import { buscarRanking } from "../services/barcoinsService";
 
 export default function BarCoinsCard() {
   const [ranking, setRanking] = useState([]);
