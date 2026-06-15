@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { getLiveMatches } from "../services/footballService";
 
 export default function LiveFootballCard() {
-  const [liveMatch, setLiveMatch] = useState(null);
-  const [nextMatches, setNextMatches] = useState([]);
+  const [liveMatches, setLiveMatches] = useState([]);
+  const [finishedMatches, setFinishedMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export default function LiveFootballCard() {
 
     const interval = setInterval(() => {
       carregarJogos();
-    }, 60000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -20,22 +20,26 @@ export default function LiveFootballCard() {
     try {
       const matches = await getLiveMatches();
 
-      const live = matches.find(
-        (m) =>
+      const agora = new Date();
+
+      const aoVivo = matches.filter((m) => {
+        const dataJogo = new Date(m.utcDate);
+
+        return (
           m.status === "IN_PLAY" ||
-          m.status === "PAUSED"
-      );
+          m.status === "PAUSED" ||
+          (["TIMED", "SCHEDULED"].includes(m.status) &&
+            dataJogo <= agora)
+        );
+      });
 
-      const upcoming = matches
-        .filter(
-          (m) =>
-            m.status === "SCHEDULED" ||
-            m.status === "TIMED"
-        )
-        .slice(0, 3);
+      const recentes = matches
+        .filter((m) => m.status === "FINISHED")
+        .slice(0, 2);
 
-      setLiveMatch(live || null);
-      setNextMatches(upcoming);
+      setLiveMatches(aoVivo.slice(0, 3));
+      setFinishedMatches(recentes);
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -43,23 +47,21 @@ export default function LiveFootballCard() {
     }
   }
 
-  function nomeTime(time) {
+  function nomeCurto(team) {
     return (
-      time?.shortName ||
-      time?.name ||
-      "Time"
+      team?.tla ||
+      team?.shortName ||
+      team?.name?.substring(0, 3)?.toUpperCase() ||
+      "???"
     );
   }
 
-  function formatarData(data) {
-    if (!data) return "";
+  function placarCasa(match) {
+    return match?.score?.fullTime?.home ?? 0;
+  }
 
-    return new Date(data).toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  function placarFora(match) {
+    return match?.score?.fullTime?.away ?? 0;
   }
 
   function getFlagUrl(team) {
@@ -70,37 +72,19 @@ export default function LiveFootballCard() {
       "New Zealand": "nz",
       France: "fr",
       Senegal: "sn",
+      Belgium: "be",
+      Egypt: "eg",
+      Spain: "es",
+      "Cape Verde": "cv",
       Brazil: "br",
       Argentina: "ar",
-      Spain: "es",
       Portugal: "pt",
       Germany: "de",
-      Belgium: "be",
-      England: "gb",
-      Croatia: "hr",
-      Morocco: "ma",
       Japan: "jp",
-      Sweden: "se",
-      Tunisia: "tn",
+      Morocco: "ma",
       Ecuador: "ec",
-      "Ivory Coast": "ci",
-      Norway: "no",
-      Iraq: "iq",
-      Ghana: "gh",
-      Panama: "pa",
-      Austria: "at",
-      Algeria: "dz",
-      Mexico: "mx",
-      Canada: "ca",
-      Qatar: "qa",
-      Switzerland: "ch",
-      Scotland: "gb",
-      Haiti: "ht",
-      Australia: "au",
-      Turkey: "tr",
-      Paraguay: "py",
-      USA: "us",
-      Colombia: "co",
+      Tunisia: "tn",
+      Sweden: "se",
     };
 
     const code = countryMap[team?.name];
@@ -113,9 +97,7 @@ export default function LiveFootballCard() {
   if (loading) {
     return (
       <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-        <div className="text-center text-zinc-400">
-          Carregando futebol...
-        </div>
+        Carregando futebol...
       </div>
     );
   }
@@ -127,123 +109,119 @@ export default function LiveFootballCard() {
         ⚽ Central do Futebol
       </h3>
 
-      {liveMatch ? (
-        <div className="bg-black rounded-xl p-4 border border-red-500/20">
+      <div className="text-cyan-400 text-xs font-bold mb-3 uppercase">
+        🔵 Ao Vivo / Recentes
+      </div>
 
-          <div className="flex justify-between items-center mb-3">
-            <div className="text-yellow-500 text-xs font-bold">
-              🏆 {liveMatch.competition?.name}
-            </div>
+      <div className="space-y-2">
 
-            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full animate-pulse">
-              AO VIVO
-            </div>
-          </div>
+        {liveMatches.map((match) => (
+          <div
+            key={match.id}
+            className="bg-[#071329] border border-red-500 rounded-xl p-3"
+          >
+            <div className="flex items-center justify-between">
 
-          <div className="grid grid-cols-3 items-center text-center">
+              <div className="w-20 text-center">
+                {getFlagUrl(match.homeTeam) && (
+                  <img
+                    src={getFlagUrl(match.homeTeam)}
+                    className="w-6 h-4 mx-auto mb-1"
+                    alt=""
+                  />
+                )}
 
-            <div>
-              {getFlagUrl(liveMatch.homeTeam) && (
-                <img
-                  src={getFlagUrl(liveMatch.homeTeam)}
-                  className="w-8 h-6 mx-auto mb-1 rounded"
-                  alt=""
-                />
-              )}
-
-              <div className="font-bold text-sm">
-                {nomeTime(liveMatch.homeTeam)}
+                <div className="font-bold">
+                  {nomeCurto(match.homeTeam)}
+                </div>
               </div>
-            </div>
 
-            <div className="text-3xl font-bold text-red-500">
-              {liveMatch.score?.fullTime?.home ?? 0}
-              {" - "}
-              {liveMatch.score?.fullTime?.away ?? 0}
-            </div>
+              <div className="text-center">
 
-            <div>
-              {getFlagUrl(liveMatch.awayTeam) && (
-                <img
-                  src={getFlagUrl(liveMatch.awayTeam)}
-                  className="w-8 h-6 mx-auto mb-1 rounded"
-                  alt=""
-                />
-              )}
-
-              <div className="font-bold text-sm">
-                {nomeTime(liveMatch.awayTeam)}
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      ) : (
-        <>
-
-          <div className="text-yellow-500 font-bold mb-2">
-            📅 Próximos Jogos
-          </div>
-
-          <div className="space-y-2">
-
-            {nextMatches.map((match) => (
-              <div
-                key={match.id}
-                className="bg-black rounded-xl p-3 border border-zinc-800"
-              >
-                <div className="text-yellow-500 text-xs font-bold mb-2">
-                  🏆 {match.competition?.name}
+                <div className="text-2xl font-bold text-red-400">
+                  {placarCasa(match)}
+                  {" : "}
+                  {placarFora(match)}
                 </div>
 
-                <div className="grid grid-cols-3 items-center text-center">
-
-                  <div>
-                    {getFlagUrl(match.homeTeam) && (
-                      <img
-                        src={getFlagUrl(match.homeTeam)}
-                        className="w-7 h-5 mx-auto mb-1 rounded"
-                        alt=""
-                      />
-                    )}
-
-                    <div className="font-semibold text-sm">
-                      {nomeTime(match.homeTeam)}
-                    </div>
-                  </div>
-
-                  <div className="text-zinc-500 text-xs font-bold">
-                    VS
-                  </div>
-
-                  <div>
-                    {getFlagUrl(match.awayTeam) && (
-                      <img
-                        src={getFlagUrl(match.awayTeam)}
-                        className="w-7 h-5 mx-auto mb-1 rounded"
-                        alt=""
-                      />
-                    )}
-
-                    <div className="font-semibold text-sm">
-                      {nomeTime(match.awayTeam)}
-                    </div>
-                  </div>
-
-                </div>
-
-                <div className="text-center text-yellow-500 text-xs mt-2">
-                  🕒 {formatarData(match.utcDate)}
+                <div className="text-xs text-zinc-300 mt-1">
+                  🔴 AO VIVO
                 </div>
 
               </div>
-            ))}
 
+              <div className="w-20 text-center">
+                {getFlagUrl(match.awayTeam) && (
+                  <img
+                    src={getFlagUrl(match.awayTeam)}
+                    className="w-6 h-4 mx-auto mb-1"
+                    alt=""
+                  />
+                )}
+
+                <div className="font-bold">
+                  {nomeCurto(match.awayTeam)}
+                </div>
+              </div>
+
+            </div>
           </div>
+        ))}
 
-        </>
-      )}
+        {finishedMatches.map((match) => (
+          <div
+            key={match.id}
+            className="bg-[#071329] border border-blue-900 rounded-xl p-3"
+          >
+            <div className="flex items-center justify-between">
+
+              <div className="w-20 text-center">
+                {getFlagUrl(match.homeTeam) && (
+                  <img
+                    src={getFlagUrl(match.homeTeam)}
+                    className="w-6 h-4 mx-auto mb-1"
+                    alt=""
+                  />
+                )}
+
+                <div className="font-bold">
+                  {nomeCurto(match.homeTeam)}
+                </div>
+              </div>
+
+              <div className="text-center">
+
+                <div className="text-2xl font-bold">
+                  {placarCasa(match)}
+                  {" : "}
+                  {placarFora(match)}
+                </div>
+
+                <div className="text-xs text-zinc-400 mt-1">
+                  Final
+                </div>
+
+              </div>
+
+              <div className="w-20 text-center">
+                {getFlagUrl(match.awayTeam) && (
+                  <img
+                    src={getFlagUrl(match.awayTeam)}
+                    className="w-6 h-4 mx-auto mb-1"
+                    alt=""
+                  />
+                )}
+
+                <div className="font-bold">
+                  {nomeCurto(match.awayTeam)}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        ))}
+
+      </div>
 
     </div>
   );
