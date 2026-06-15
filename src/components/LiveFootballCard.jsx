@@ -4,6 +4,7 @@ import { getLiveMatches } from "../services/footballService";
 export default function LiveFootballCard() {
   const [liveMatches, setLiveMatches] = useState([]);
   const [finishedMatches, setFinishedMatches] = useState([]);
+  const [nextMatches, setNextMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,12 +34,24 @@ export default function LiveFootballCard() {
         );
       });
 
+      const proximos = matches
+        .filter((m) => {
+          const dataJogo = new Date(m.utcDate);
+
+          return (
+            ["TIMED", "SCHEDULED"].includes(m.status) &&
+            dataJogo > agora
+          );
+        })
+        .slice(0, 3);
+
       const recentes = matches
         .filter((m) => m.status === "FINISHED")
         .slice(0, 2);
 
       setLiveMatches(aoVivo.slice(0, 3));
       setFinishedMatches(recentes);
+      setNextMatches(proximos);
 
     } catch (error) {
       console.error(error);
@@ -85,6 +98,13 @@ export default function LiveFootballCard() {
       Ecuador: "ec",
       Tunisia: "tn",
       Sweden: "se",
+      England: "gb",
+      Croatia: "hr",
+      Mexico: "mx",
+      USA: "us",
+      Canada: "ca",
+      Paraguay: "py",
+      Colombia: "co",
     };
 
     const code = countryMap[team?.name];
@@ -92,6 +112,13 @@ export default function LiveFootballCard() {
     if (!code) return null;
 
     return `https://flagcdn.com/w40/${code}.png`;
+  }
+
+  function horaJogo(data) {
+    return new Date(data).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   if (loading) {
@@ -102,6 +129,8 @@ export default function LiveFootballCard() {
     );
   }
 
+  const mostrarAoVivo = liveMatches.length > 0;
+
   return (
     <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
 
@@ -109,125 +138,182 @@ export default function LiveFootballCard() {
         ⚽ Central do Futebol
       </h3>
 
-      <div className="text-yellow-500 text-xs font-bold mb-3 uppercase">
-        🏆 Placares
+      <div className="text-cyan-400 text-xs font-bold mb-3 uppercase">
+        {mostrarAoVivo
+          ? "🔵 AO VIVO / RECENTES"
+          : "📅 PRÓXIMOS JOGOS"}
       </div>
 
       <div className="space-y-2">
 
-        {liveMatches.map((match) => (
-          <div
-            key={match.id}
-            className="bg-black border border-yellow-500/40 rounded-xl p-3"
-          >
-            <div className="flex items-center justify-between">
+        {mostrarAoVivo ? (
+          <>
+            {liveMatches.map((match) => (
+              <div
+                key={match.id}
+                className="bg-black border border-yellow-500/40 rounded-xl p-3"
+              >
+                <div className="flex items-center justify-between">
 
-              <div className="w-20 text-center">
+                  <div className="w-20 text-center">
 
-                {getFlagUrl(match.homeTeam) && (
-                  <img
-                    src={getFlagUrl(match.homeTeam)}
-                    className="w-6 h-4 mx-auto mb-1 rounded"
-                    alt=""
-                  />
-                )}
+                    {getFlagUrl(match.homeTeam) && (
+                      <img
+                        src={getFlagUrl(match.homeTeam)}
+                        className="w-6 h-4 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
 
-                <div className="font-bold text-white">
-                  {nomeCurto(match.homeTeam)}
+                    <div className="font-bold text-white">
+                      {nomeCurto(match.homeTeam)}
+                    </div>
+
+                  </div>
+
+                  <div className="text-center">
+
+                    <div className="text-3xl font-bold text-yellow-500">
+                      {placarCasa(match)} : {placarFora(match)}
+                    </div>
+
+                    <div className="text-xs text-green-500 font-bold mt-1">
+                      🟢 AO VIVO
+                    </div>
+
+                  </div>
+
+                  <div className="w-20 text-center">
+
+                    {getFlagUrl(match.awayTeam) && (
+                      <img
+                        src={getFlagUrl(match.awayTeam)}
+                        className="w-6 h-4 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
+
+                    <div className="font-bold text-white">
+                      {nomeCurto(match.awayTeam)}
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            ))}
+
+            {finishedMatches.map((match) => (
+              <div
+                key={match.id}
+                className="bg-black border border-zinc-700 rounded-xl p-3"
+              >
+                <div className="flex items-center justify-between">
+
+                  <div className="w-20 text-center">
+
+                    {getFlagUrl(match.homeTeam) && (
+                      <img
+                        src={getFlagUrl(match.homeTeam)}
+                        className="w-6 h-4 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
+
+                    <div className="font-bold text-white">
+                      {nomeCurto(match.homeTeam)}
+                    </div>
+
+                  </div>
+
+                  <div className="text-center">
+
+                    <div className="text-3xl font-bold text-white">
+                      {placarCasa(match)} : {placarFora(match)}
+                    </div>
+
+                    <div className="text-xs text-zinc-400 mt-1">
+                      FINAL
+                    </div>
+
+                  </div>
+
+                  <div className="w-20 text-center">
+
+                    {getFlagUrl(match.awayTeam) && (
+                      <img
+                        src={getFlagUrl(match.awayTeam)}
+                        className="w-6 h-4 mx-auto mb-1 rounded"
+                        alt=""
+                      />
+                    )}
+
+                    <div className="font-bold text-white">
+                      {nomeCurto(match.awayTeam)}
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          nextMatches.map((match) => (
+            <div
+              key={match.id}
+              className="bg-black border border-zinc-700 rounded-xl p-3"
+            >
+              <div className="flex items-center justify-between">
+
+                <div className="w-20 text-center">
+
+                  {getFlagUrl(match.homeTeam) && (
+                    <img
+                      src={getFlagUrl(match.homeTeam)}
+                      className="w-6 h-4 mx-auto mb-1 rounded"
+                      alt=""
+                    />
+                  )}
+
+                  <div className="font-bold text-white">
+                    {nomeCurto(match.homeTeam)}
+                  </div>
+
+                </div>
+
+                <div className="text-center">
+
+                  <div className="text-yellow-500 font-bold">
+                    VS
+                  </div>
+
+                  <div className="text-xs text-zinc-400 mt-1">
+                    🕒 {horaJogo(match.utcDate)}
+                  </div>
+
+                </div>
+
+                <div className="w-20 text-center">
+
+                  {getFlagUrl(match.awayTeam) && (
+                    <img
+                      src={getFlagUrl(match.awayTeam)}
+                      className="w-6 h-4 mx-auto mb-1 rounded"
+                      alt=""
+                    />
+                  )}
+
+                  <div className="font-bold text-white">
+                    {nomeCurto(match.awayTeam)}
+                  </div>
+
                 </div>
 
               </div>
-
-              <div className="text-center">
-
-                <div className="text-3xl font-bold text-yellow-500">
-                  {placarCasa(match)}
-                  {" : "}
-                  {placarFora(match)}
-                </div>
-
-                <div className="text-xs text-green-500 font-bold mt-1">
-                  🟢 AO VIVO
-                </div>
-
-              </div>
-
-              <div className="w-20 text-center">
-
-                {getFlagUrl(match.awayTeam) && (
-                  <img
-                    src={getFlagUrl(match.awayTeam)}
-                    className="w-6 h-4 mx-auto mb-1 rounded"
-                    alt=""
-                  />
-                )}
-
-                <div className="font-bold text-white">
-                  {nomeCurto(match.awayTeam)}
-                </div>
-
-              </div>
-
             </div>
-          </div>
-        ))}
-
-        {finishedMatches.map((match) => (
-          <div
-            key={match.id}
-            className="bg-black border border-zinc-700 rounded-xl p-3"
-          >
-            <div className="flex items-center justify-between">
-
-              <div className="w-20 text-center">
-
-                {getFlagUrl(match.homeTeam) && (
-                  <img
-                    src={getFlagUrl(match.homeTeam)}
-                    className="w-6 h-4 mx-auto mb-1 rounded"
-                    alt=""
-                  />
-                )}
-
-                <div className="font-bold text-white">
-                  {nomeCurto(match.homeTeam)}
-                </div>
-
-              </div>
-
-              <div className="text-center">
-
-                <div className="text-3xl font-bold text-white">
-                  {placarCasa(match)}
-                  {" : "}
-                  {placarFora(match)}
-                </div>
-
-                <div className="text-xs text-zinc-400 mt-1">
-                  FINAL
-                </div>
-
-              </div>
-
-              <div className="w-20 text-center">
-
-                {getFlagUrl(match.awayTeam) && (
-                  <img
-                    src={getFlagUrl(match.awayTeam)}
-                    className="w-6 h-4 mx-auto mb-1 rounded"
-                    alt=""
-                  />
-                )}
-
-                <div className="font-bold text-white">
-                  {nomeCurto(match.awayTeam)}
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        ))}
+          ))
+        )}
 
       </div>
 
