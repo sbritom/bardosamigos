@@ -43,6 +43,15 @@ export default function LiveFootballCard() {
     }
   }
 
+  function nomeTime(time) {
+    return (
+      time?.shortName ||
+      time?.tla ||
+      time?.name ||
+      "Time"
+    );
+  }
+
   function formatarData(data) {
     if (!data) return "";
 
@@ -54,18 +63,17 @@ export default function LiveFootballCard() {
     });
   }
 
-  function nomeTime(time) {
+  function placarAoVivo(match) {
     return (
-      time?.shortName ||
-      time?.tla ||
-      time?.name ||
-      "Time"
+      match?.score?.fullTime?.home ??
+      match?.score?.winner ??
+      0
     );
   }
 
   if (loading) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[320px] flex items-center justify-center">
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[340px] flex items-center justify-center">
         <span className="text-zinc-400">
           Carregando futebol...
         </span>
@@ -74,38 +82,44 @@ export default function LiveFootballCard() {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[320px]">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[340px]">
       <h3 className="text-yellow-500 text-xl font-bold mb-4">
-        ⚽ Futebol Agora
+        ⚽ Central do Futebol
       </h3>
 
       {liveMatch ? (
-        <div className="bg-black rounded-xl p-4 border border-red-500/20">
+        <div className="bg-black rounded-xl p-5 border border-red-500/20">
 
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-yellow-500 font-bold text-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-yellow-500 font-bold text-sm">
               🏆 {liveMatch.competition?.name}
-            </span>
+            </div>
 
-            <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+            <div className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
               AO VIVO
-            </span>
+            </div>
           </div>
 
-          <div className="text-center">
+          <div className="grid grid-cols-3 items-center text-center">
 
-            <div className="text-lg font-bold">
-              {nomeTime(liveMatch.homeTeam)}
+            <div>
+              <div className="font-bold text-lg">
+                {nomeTime(liveMatch.homeTeam)}
+              </div>
             </div>
 
-            <div className="text-4xl font-bold text-red-500 my-3">
-              {liveMatch.score?.fullTime?.home ?? 0}
-              {" - "}
-              {liveMatch.score?.fullTime?.away ?? 0}
+            <div>
+              <div className="text-4xl font-bold text-red-500">
+                {liveMatch.score?.fullTime?.home ?? 0}
+                {" - "}
+                {liveMatch.score?.fullTime?.away ?? 0}
+              </div>
             </div>
 
-            <div className="text-lg font-bold">
-              {nomeTime(liveMatch.awayTeam)}
+            <div>
+              <div className="font-bold text-lg">
+                {nomeTime(liveMatch.awayTeam)}
+              </div>
             </div>
 
           </div>
@@ -119,31 +133,44 @@ export default function LiveFootballCard() {
           </div>
 
           <div className="space-y-3">
+
             {nextMatches.map((match) => (
               <div
                 key={match.id}
-                className="bg-black rounded-xl p-3"
+                className="bg-black rounded-xl p-4 border border-zinc-800"
               >
-                <div className="text-xs text-zinc-400 mb-1">
+                <div className="text-xs text-yellow-500 font-bold mb-2">
                   🏆 {match.competition?.name}
                 </div>
 
-                <div className="font-semibold">
-                  {nomeTime(match.homeTeam)}
-                  {" x "}
-                  {nomeTime(match.awayTeam)}
+                <div className="grid grid-cols-3 items-center text-center">
+
+                  <div className="font-bold">
+                    {nomeTime(match.homeTeam)}
+                  </div>
+
+                  <div className="text-zinc-500 text-sm">
+                    VS
+                  </div>
+
+                  <div className="font-bold">
+                    {nomeTime(match.awayTeam)}
+                  </div>
+
                 </div>
 
-                <div className="text-yellow-500 text-sm mt-1">
-                  {formatarData(match.utcDate)}
+                <div className="text-center text-yellow-500 text-sm mt-3">
+                  🕒 {formatarData(match.utcDate)}
                 </div>
+
               </div>
             ))}
+
           </div>
 
         </div>
       ) : (
-        <div className="bg-black rounded-xl p-5 text-center">
+        <div className="bg-black rounded-xl p-6 text-center">
 
           <div className="text-5xl mb-3">
             ⚽
@@ -154,7 +181,7 @@ export default function LiveFootballCard() {
           </div>
 
           <div className="text-zinc-400 text-sm mt-2">
-            Não existem jogos ao vivo ou agendados.
+            Não existem jogos ao vivo ou agendados no momento.
           </div>
 
         </div>
