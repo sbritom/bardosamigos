@@ -63,12 +63,45 @@ export default function LiveFootballCard() {
     });
   }
 
-  function placarAoVivo(match) {
-    return (
-      match?.score?.fullTime?.home ??
-      match?.score?.winner ??
-      0
-    );
+  const flags = {
+    BRA: "🇧🇷",
+    ARG: "🇦🇷",
+    URU: "🇺🇾",
+    KSA: "🇸🇦",
+    FRA: "🇫🇷",
+    GER: "🇩🇪",
+    ENG: "🏴",
+    ESP: "🇪🇸",
+    ITA: "🇮🇹",
+    POR: "🇵🇹",
+    BEL: "🇧🇪",
+    NED: "🇳🇱",
+    SWE: "🇸🇪",
+    TUN: "🇹🇳",
+    IRI: "🇮🇷",
+    NZL: "🇳🇿",
+    SEN: "🇸🇳",
+    CRO: "🇭🇷",
+    USA: "🇺🇸",
+    MEX: "🇲🇽",
+    CAN: "🇨🇦",
+    JPN: "🇯🇵",
+    KOR: "🇰🇷",
+    COL: "🇨🇴",
+    ECU: "🇪🇨",
+    CIV: "🇨🇮",
+    MAR: "🇲🇦",
+    SCO: "🏴",
+    NOR: "🇳🇴",
+    IRQ: "🇮🇶",
+    GHA: "🇬🇭",
+    PAN: "🇵🇦",
+    AUT: "🇦🇹",
+    DZA: "🇩🇿",
+  };
+
+  function bandeira(time) {
+    return flags[time?.tla] || "⚽";
   }
 
   if (loading) {
@@ -96,30 +129,26 @@ export default function LiveFootballCard() {
             </div>
 
             <div className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-              AO VIVO
+              🔴 AO VIVO
             </div>
           </div>
 
-          <div className="grid grid-cols-3 items-center text-center">
+          <div className="text-center">
 
-            <div>
-              <div className="font-bold text-lg">
-                {nomeTime(liveMatch.homeTeam)}
-              </div>
+            <div className="text-xl font-bold">
+              {bandeira(liveMatch.homeTeam)}{" "}
+              {nomeTime(liveMatch.homeTeam)}
             </div>
 
-            <div>
-              <div className="text-4xl font-bold text-red-500">
-                {liveMatch.score?.fullTime?.home ?? 0}
-                {" - "}
-                {liveMatch.score?.fullTime?.away ?? 0}
-              </div>
+            <div className="text-5xl font-bold text-red-500 my-4">
+              {liveMatch.score?.fullTime?.home ?? 0}
+              {" - "}
+              {liveMatch.score?.fullTime?.away ?? 0}
             </div>
 
-            <div>
-              <div className="font-bold text-lg">
-                {nomeTime(liveMatch.awayTeam)}
-              </div>
+            <div className="text-xl font-bold">
+              {bandeira(liveMatch.awayTeam)}{" "}
+              {nomeTime(liveMatch.awayTeam)}
             </div>
 
           </div>
@@ -139,27 +168,31 @@ export default function LiveFootballCard() {
                 key={match.id}
                 className="bg-black rounded-xl p-4 border border-zinc-800"
               >
-                <div className="text-xs text-yellow-500 font-bold mb-2">
+                <div className="text-xs text-yellow-500 font-bold mb-3">
                   🏆 {match.competition?.name}
                 </div>
 
                 <div className="grid grid-cols-3 items-center text-center">
 
-                  <div className="font-bold">
+                  <div className="font-bold text-lg">
+                    {bandeira(match.homeTeam)}
+                    <br />
                     {nomeTime(match.homeTeam)}
                   </div>
 
-                  <div className="text-zinc-500 text-sm">
+                  <div className="text-zinc-500 font-bold">
                     VS
                   </div>
 
-                  <div className="font-bold">
+                  <div className="font-bold text-lg">
+                    {bandeira(match.awayTeam)}
+                    <br />
                     {nomeTime(match.awayTeam)}
                   </div>
 
                 </div>
 
-                <div className="text-center text-yellow-500 text-sm mt-3">
+                <div className="text-center text-yellow-500 text-sm mt-4">
                   🕒 {formatarData(match.utcDate)}
                 </div>
 
