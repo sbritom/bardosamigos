@@ -10,7 +10,7 @@ import {
   buscarHallDaFama,
   buscarUsuarioLocal,
   sairUsuarioLocal,
-} from "../services/barCoinsService";
+} from "../services/barcoinsService";
 
 export default function BarCoinsPage() {
   const [nome, setNome] = useState("");
