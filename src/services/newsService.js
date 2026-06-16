@@ -1,9 +1,5 @@
 const API_KEY = import.meta.env.VITE_NEWSDATA_API_KEY;
 
-console.log("TESTE NEWS");
-console.log(import.meta.env);
-console.log("NEWS KEY:", API_KEY);
-
 export async function getLatestNews() {
   try {
     const response = await fetch(
@@ -12,22 +8,27 @@ export async function getLatestNews() {
 
     const data = await response.json();
 
-    console.log("STATUS:", response.status);
-    console.log("NEWS DATA:", data);
-
     if (!response.ok) {
-      throw new Error(data.message || "Erro na API");
+      throw new Error(data.message || "Erro ao carregar notícias");
     }
 
     if (!data.results) {
       return [];
     }
 
-    return data.results.slice(0, 5).map((item, index) => ({
+    return data.results.slice(0, 6).map((item, index) => ({
       id: index + 1,
-      category: item.category?.[0] || "📰 Notícia",
+      category: item.category?.[0] || "Notícia",
       title: item.title || "Sem título",
+      description: item.description || "",
+      image:
+        item.image_url ||
+        item.image ||
+        item.source_icon ||
+        null,
       link: item.link || "#",
+      date: item.pubDate || "",
+      source: item.source_id || "News",
     }));
   } catch (error) {
     console.error("ERRO NEWS:", error);
@@ -35,9 +36,14 @@ export async function getLatestNews() {
     return [
       {
         id: 1,
-        category: "⚠️ Sistema",
+        category: "Sistema",
         title: "Erro ao carregar notícias.",
+        description:
+          "Não foi possível obter notícias no momento.",
+        image: null,
         link: "#",
+        date: "",
+        source: "Sistema",
       },
     ];
   }
