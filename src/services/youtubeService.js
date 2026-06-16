@@ -1,5 +1,10 @@
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
+console.log("========== YOUTUBE ==========");
+console.log("API_KEY:", API_KEY);
+console.log("ENV:", import.meta.env);
+console.log("============================");
+
 export async function buscarLiveDoCanal(channelId) {
   try {
     const url =
@@ -36,15 +41,18 @@ export async function buscarTopMusicasBrasil() {
     const url =
       `https://www.googleapis.com/youtube/v3/search` +
       `?part=snippet` +
-      `&q=musicas mais tocadas brasil 2026` +
+      `&q=musicas mais tocadas brasil` +
       `&type=video` +
-      `&videoCategoryId=10` +
       `&maxResults=5` +
-      `&regionCode=BR` +
       `&key=${API_KEY}`;
+
+    console.log("URL:", url);
 
     const response = await fetch(url);
     const data = await response.json();
+
+    console.log("STATUS:", response.status);
+    console.log("DATA:", data);
 
     if (!data.items?.length) {
       return [];

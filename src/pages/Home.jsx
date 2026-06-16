@@ -6,7 +6,6 @@ import TopMusicCard from "../components/TopMusicCard";
 import LiveFootballCard from "../components/LiveFootballCard";
 import LatestNewsCard from "../components/LatestNewsCard";
 
-import MusicCard from "../components/MusicCard";
 import ToolsCard from "../components/ToolsCard";
 import CommunityCard from "../components/CommunityCard";
 
@@ -32,36 +31,37 @@ export default function Home() {
         </div>
       </div>
 
-      {/* TOP MUSICAS + FUTEBOL */}
+      {/* TOP MUSICAS + FUTEBOL + NOTICIAS */}
       <div className="max-w-7xl mx-auto px-6 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-6">
-            <TopMusicCard />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="lg:col-span-4 flex">
+            <div className="w-full">
+              <TopMusicCard />
+            </div>
           </div>
 
-          <div className="lg:col-span-6">
-            <LiveFootballCard />
+          <div className="lg:col-span-4 flex">
+            <div className="w-full">
+              <LiveFootballCard />
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 flex">
+            <div className="w-full">
+              <LatestNewsCard />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* NOTICIAS */}
+      {/* FERRAMENTAS + COMUNIDADE */}
       <div className="max-w-7xl mx-auto px-6 mt-6">
-        <LatestNewsCard />
-      </div>
-
-      {/* MUSICA + FERRAMENTAS + COMUNIDADE */}
-      <div className="max-w-7xl mx-auto px-6 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-3">
-            <MusicCard />
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           <div className="lg:col-span-6">
             <ToolsCard />
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-6">
             <CommunityCard />
           </div>
         </div>

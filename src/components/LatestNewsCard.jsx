@@ -6,13 +6,13 @@ export default function LatestNewsCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadNews();
+    carregarNoticias();
   }, []);
 
-  async function loadNews() {
+  async function carregarNoticias() {
     try {
       const data = await getLatestNews();
-      setNews(data);
+      setNews(data.slice(0, 5));
     } catch (error) {
       console.error(error);
     } finally {
@@ -20,23 +20,9 @@ export default function LatestNewsCard() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return "";
-
-    try {
-      return new Date(dateString).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    } catch {
-      return "";
-    }
-  }
-
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
-      <div className="flex items-center justify-between mb-5">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-yellow-500 text-xl font-bold">
           📰 Últimas Notícias
         </h3>
@@ -47,58 +33,43 @@ export default function LatestNewsCard() {
       </div>
 
       {loading ? (
-        <div className="text-center py-10 text-zinc-400">
+        <div className="text-zinc-400">
           Carregando notícias...
         </div>
-      ) : news.length === 0 ? (
-        <div className="text-center py-10 text-zinc-400">
-          Nenhuma notícia encontrada.
-        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-3">
           {news.map((item) => (
             <a
               key={item.id}
               href={item.link}
               target="_blank"
               rel="noreferrer"
-              className="bg-black rounded-xl overflow-hidden border border-zinc-800 hover:border-yellow-500 hover:scale-[1.02] transition-all duration-300"
+              className="flex gap-3 bg-black rounded-xl border border-zinc-800 hover:border-yellow-500 transition-all duration-300 p-3"
             >
-              {item.image ? (
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-44 object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="h-44 flex items-center justify-center bg-zinc-800 text-5xl">
-                  📰
-                </div>
-              )}
-
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-yellow-500 text-xs font-semibold uppercase">
-                    {item.category}
-                  </span>
-
-                  <span className="text-zinc-500 text-xs">
-                    {formatDate(item.date)}
-                  </span>
-                </div>
-
-                <h4 className="text-white font-bold line-clamp-2 mb-2">
-                  {item.title}
-                </h4>
-
-                {item.description && (
-                  <p className="text-zinc-400 text-sm line-clamp-3 mb-3">
-                    {item.description}
-                  </p>
+              <div className="w-16 h-16 flex-shrink-0">
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-lg bg-zinc-800 flex items-center justify-center">
+                    📰
+                  </div>
                 )}
+              </div>
 
-                <div className="text-xs text-cyan-400">
+              <div className="flex-1 min-w-0">
+                <div className="text-yellow-500 text-xs uppercase mb-1">
+                  {item.category}
+                </div>
+
+                <div className="font-bold text-white text-sm line-clamp-2">
+                  {item.title}
+                </div>
+
+                <div className="text-cyan-400 text-xs mt-1">
                   {item.source}
                 </div>
               </div>
