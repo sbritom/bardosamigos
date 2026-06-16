@@ -37,8 +37,8 @@ export default function TvAoVivoCard() {
 
       setCanalAtual(
         destaque ||
-        canaisComPlayer[0] ||
-        CANAL_PADRAO
+          canaisComPlayer[0] ||
+          CANAL_PADRAO
       );
     } catch (error) {
       console.error("Erro ao carregar TV:", error);
@@ -55,7 +55,7 @@ export default function TvAoVivoCard() {
 
   if (carregando) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-[760px] flex items-center justify-center">
+      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-[620px] flex items-center justify-center">
         <div className="text-zinc-400">
           Carregando TV...
         </div>
@@ -64,7 +64,7 @@ export default function TvAoVivoCard() {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-yellow-500/20 h-[760px] flex flex-col">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-yellow-500/20 h-[620px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-yellow-500 text-xl font-bold">
           📺 TV Ao Vivo
@@ -87,7 +87,8 @@ export default function TvAoVivoCard() {
 
       <div className="mt-4">
         <div className="font-bold text-yellow-500 text-lg">
-          🔴 {canalAtual.titulo_transmissao ||
+          🔴{" "}
+          {canalAtual.titulo_transmissao ||
             canalAtual.nome ||
             "Transmissão ao Vivo"}
         </div>
@@ -99,7 +100,7 @@ export default function TvAoVivoCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-auto pt-5">
+      <div className="grid grid-cols-2 gap-2 mt-auto pt-3">
         {[
           "Música",
           "Filmes",
@@ -109,7 +110,7 @@ export default function TvAoVivoCard() {
           <button
             key={categoria}
             onClick={() => abrirTv(categoria)}
-            className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-3 text-sm transition-all"
+            className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-2 text-sm transition-all"
           >
             {categoria}
           </button>
