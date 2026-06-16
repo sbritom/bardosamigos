@@ -1,10 +1,5 @@
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
-console.log("========== YOUTUBE ==========");
-console.log("API_KEY:", API_KEY);
-console.log("ENV:", import.meta.env);
-console.log("============================");
-
 export async function buscarLiveDoCanal(channelId) {
   try {
     const url =
@@ -38,33 +33,46 @@ export async function buscarLiveDoCanal(channelId) {
 
 export async function buscarTopMusicasBrasil() {
   try {
-    const url =
-      `https://www.googleapis.com/youtube/v3/search` +
-      `?part=snippet` +
-      `&q=musicas mais tocadas brasil` +
-      `&type=video` +
-      `&maxResults=5` +
-      `&key=${API_KEY}`;
+    const buscas = [
+      "sertanejo 2025",
+      "top brasil 2025",
+      "ana castela",
+      "henrique e juliano",
+      "gusttavo lima"
+    ];
 
-    console.log("URL:", url);
+    const resultados = [];
 
-    const response = await fetch(url);
-    const data = await response.json();
+    for (const busca of buscas) {
+      const url =
+        `https://www.googleapis.com/youtube/v3/search` +
+        `?part=snippet` +
+        `&q=${encodeURIComponent(busca)}` +
+        `&type=video` +
+        `&videoCategoryId=10` +
+        `&maxResults=1` +
+        `&regionCode=BR` +
+        `&key=${API_KEY}`;
 
-    console.log("STATUS:", response.status);
-    console.log("DATA:", data);
+      const response = await fetch(url);
+      const data = await response.json();
 
-    if (!data.items?.length) {
-      return [];
+      if (data.items?.length) {
+        const item = data.items[0];
+
+        resultados.push({
+          id: item.id.videoId,
+          titulo: item.snippet.title,
+          canal: item.snippet.channelTitle,
+          thumbnail:
+            item.snippet.thumbnails?.medium?.url ||
+            item.snippet.thumbnails?.high?.url,
+          link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+        });
+      }
     }
 
-    return data.items.map((item) => ({
-      id: item.id.videoId,
-      titulo: item.snippet.title,
-      canal: item.snippet.channelTitle,
-      thumbnail: item.snippet.thumbnails?.high?.url,
-      link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-    }));
+    return resultados;
   } catch (error) {
     console.error("Erro Top Músicas:", error);
     return [];
