@@ -34,29 +34,23 @@ export default function Home() {
       {/* TOP MUSICAS + FUTEBOL + NOTICIAS */}
       <div className="max-w-7xl mx-auto px-6 mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <div className="lg:col-span-4 flex">
-            <div className="w-full">
-              <TopMusicCard />
-            </div>
+          <div className="lg:col-span-4">
+            <TopMusicCard />
           </div>
 
-          <div className="lg:col-span-4 flex">
-            <div className="w-full">
-              <LiveFootballCard />
-            </div>
+          <div className="lg:col-span-4">
+            <LiveFootballCard />
           </div>
 
-          <div className="lg:col-span-4 flex">
-            <div className="w-full">
-              <LatestNewsCard />
-            </div>
+          <div className="lg:col-span-4">
+            <LatestNewsCard />
           </div>
         </div>
       </div>
 
       {/* FERRAMENTAS + COMUNIDADE */}
       <div className="max-w-7xl mx-auto px-6 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-6">
             <ToolsCard />
           </div>

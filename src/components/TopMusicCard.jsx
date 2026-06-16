@@ -12,10 +12,7 @@ export default function TopMusicCard() {
   async function carregarMusicas() {
     try {
       const data = await buscarTopMusicasBrasil();
-
-      console.log("TOP MUSICAS:", data);
-
-      setMusicas(data);
+      setMusicas(data.slice(0, 5));
     } catch (error) {
       console.error("Erro ao carregar músicas:", error);
     } finally {
@@ -26,23 +23,19 @@ export default function TopMusicCard() {
   const medalhas = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 min-h-[260px]">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-[540px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-yellow-500 text-xl font-bold">
           🔥 Top 5 do Brasil
         </h3>
 
-        <span className="text-xs text-zinc-400">
-          YouTube
-        </span>
+        <span className="text-xs text-zinc-400">YouTube</span>
       </div>
 
       {loading ? (
-        <div className="text-zinc-400">
-          Carregando músicas...
-        </div>
+        <div className="text-zinc-400">Carregando músicas...</div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 overflow-hidden">
           {musicas.map((musica, index) => (
             <a
               key={musica.id}
@@ -54,7 +47,7 @@ export default function TopMusicCard() {
               <img
                 src={musica.thumbnail}
                 alt={musica.titulo}
-                className="w-16 h-16 rounded-lg object-cover"
+                className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
               />
 
               <div className="flex-1 min-w-0">

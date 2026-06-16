@@ -21,7 +21,7 @@ export default function LatestNewsCard() {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-full">
+    <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-[540px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-yellow-500 text-xl font-bold">
           📰 Últimas Notícias
@@ -33,11 +33,9 @@ export default function LatestNewsCard() {
       </div>
 
       {loading ? (
-        <div className="text-zinc-400">
-          Carregando notícias...
-        </div>
+        <div className="text-zinc-400">Carregando notícias...</div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 overflow-y-auto pr-1">
           {news.map((item) => (
             <a
               key={item.id}
