@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { buscarCanais } from "../../services/tvService";
 
 const CANAL_PADRAO = {
-  id: "padrao-musica",
-  nome: "Música",
-  categoria: "Música",
+  id: "padrao-tv",
+  nome: "TV Bar dos Amigos",
+  categoria: "Futebol",
   tipo: "youtube_embed",
-  url_embed: "https://www.youtube.com/embed/s6GjCmE8afw",
-  titulo_transmissao: "Música ao Vivo",
-  descricao: "Canal padrão do Bar dos Amigos",
+  url_embed: "https://www.youtube.com/embed/URt8jOImwTw",
+  titulo_transmissao: "Transmissão Ao Vivo",
+  descricao: "Canal principal do Bar dos Amigos",
   destaque_home: true,
   ativo: true,
 };
 
 export default function TvAoVivoCard() {
+  const navigate = useNavigate();
+
   const [canalAtual, setCanalAtual] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
@@ -35,11 +38,7 @@ export default function TvAoVivoCard() {
         (canal) => canal.destaque_home === true
       );
 
-      setCanalAtual(
-        destaque ||
-          canaisComPlayer[0] ||
-          CANAL_PADRAO
-      );
+      setCanalAtual(destaque || canaisComPlayer[0] || CANAL_PADRAO);
     } catch (error) {
       console.error("Erro ao carregar TV:", error);
       setCanalAtual(CANAL_PADRAO);
@@ -49,33 +48,31 @@ export default function TvAoVivoCard() {
   }
 
   function abrirTv(categoria) {
-    window.location.href =
-      `/tv?categoria=${encodeURIComponent(categoria)}`;
+    navigate(`/tv?categoria=${encodeURIComponent(categoria)}`);
   }
 
   if (carregando) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 h-[620px] flex items-center justify-center">
-        <div className="text-zinc-400">
-          Carregando TV...
-        </div>
+      <div className="bar-card h-full min-h-[500px] flex items-center justify-center">
+        <div className="text-zinc-400">Carregando TV...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-5 border border-yellow-500/20 h-[620px] flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-yellow-500 text-xl font-bold">
-          📺 TV Ao Vivo
-        </h3>
+    <div className="bar-card h-full min-h-[500px] flex flex-col p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="bar-gold-text text-xl font-black">📺 TV Ao Vivo</h3>
 
-        <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full font-bold">
-          AO VIVO
-        </span>
+        <button
+          onClick={() => abrirTv(canalAtual?.categoria || "Futebol")}
+          className="text-xs border border-yellow-500/25 px-3 py-1 rounded-full hover:border-yellow-500 transition-all"
+        >
+          Ver todos
+        </button>
       </div>
 
-      <div className="aspect-video rounded-xl overflow-hidden bg-black border border-zinc-800">
+      <div className="aspect-video rounded-xl overflow-hidden bg-black border border-yellow-500/15">
         <iframe
           className="w-full h-full"
           src={canalAtual.url_embed}
@@ -85,32 +82,28 @@ export default function TvAoVivoCard() {
         />
       </div>
 
-      <div className="mt-4">
-        <div className="font-bold text-yellow-500 text-lg">
-          🔴{" "}
-          {canalAtual.titulo_transmissao ||
-            canalAtual.nome ||
-            "Transmissão ao Vivo"}
+      <div className="mt-4 flex items-start justify-between gap-4">
+        <div>
+          <div className="font-black bar-gold-text text-xl">
+            {canalAtual.titulo_transmissao || canalAtual.nome}
+          </div>
+
+          <div className="text-zinc-400 text-sm mt-1">
+            {canalAtual.descricao || canalAtual.categoria || "TV Bar dos Amigos"}
+          </div>
         </div>
 
-        <div className="text-zinc-400 text-sm mt-1">
-          {canalAtual.descricao ||
-            canalAtual.categoria ||
-            "TV Bar dos Amigos"}
-        </div>
+        <span className="bar-live px-3 py-1 rounded-full text-xs shrink-0">
+          AO VIVO
+        </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-auto pt-3">
-        {[
-          "Música",
-          "Filmes",
-          "Eventos",
-          "Futebol",
-        ].map((categoria) => (
+      <div className="grid grid-cols-4 gap-2 mt-auto pt-5">
+        {["Futebol", "Música", "Filmes", "Eventos"].map((categoria) => (
           <button
             key={categoria}
             onClick={() => abrirTv(categoria)}
-            className="bg-black border border-zinc-700 hover:border-yellow-500 rounded-lg py-2 text-sm transition-all"
+            className="bar-mini-card py-3 text-sm font-bold"
           >
             {categoria}
           </button>

@@ -3,25 +3,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import BarCoinsPage from "./pages/BarCoinsPage";
 import TvPage from "./pages/TvPage";
-import BarStudioPage from "./pages/BarStudioPage";
 
 import RadioTop from "./components/radio/RadioTop";
+import Header from "./components/layout/Header";
+
+import "./styles/theme.css";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <RadioTop />
+      <div className="min-h-screen bg-bar-bg text-white">
+        <RadioTop />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/barcoins" element={<BarCoinsPage />} />
-        <Route path="/tv" element={<TvPage />} />
+        <Header />
 
-        <Route
-          path="/ferramentas/barstudio"
-          element={<BarStudioPage />}
-        />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/tv" element={<TvPage />} />
+          <Route path="/barcoins" element={<BarCoinsPage />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
