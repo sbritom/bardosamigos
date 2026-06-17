@@ -1,28 +1,16 @@
 import { supabase } from "./supabase";
-
-export function youtubeWatchToEmbed(url) {
-  if (!url) return null;
-
-  let videoId = null;
-
-  if (url.includes("youtube.com/watch?v=")) {
-    videoId = url.split("v=")[1]?.split("&")[0];
-  }
-
-  if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1]?.split("?")[0];
-  }
-
-  if (!videoId) return url;
-
-  return `https://www.youtube.com/embed/${videoId}`;
-}
+import {
+  buscarLiveDoCanalYoutube,
+  youtubeWatchToEmbed,
+} from "./youtubeService";
 
 export async function buscarCanalAtivo() {
   const { data, error } = await supabase
     .from("canais_tv")
     .select("*")
     .eq("ativo", true)
+    .order("prioridade", { ascending: true })
+    .order("id", { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -31,7 +19,7 @@ export async function buscarCanalAtivo() {
     return null;
   }
 
-  return data;
+  return prepararCanal(data);
 }
 
 export async function buscarCanais() {
@@ -39,6 +27,7 @@ export async function buscarCanais() {
     .from("canais_tv")
     .select("*")
     .eq("ativo", true)
+    .order("prioridade", { ascending: true })
     .order("id", { ascending: true });
 
   if (error) {
@@ -46,7 +35,7 @@ export async function buscarCanais() {
     return [];
   }
 
-  return data || [];
+  return prepararLista(data || []);
 }
 
 export async function buscarCanaisPorCategoria(categoria) {
@@ -55,6 +44,7 @@ export async function buscarCanaisPorCategoria(categoria) {
     .select("*")
     .eq("ativo", true)
     .eq("categoria", categoria)
+    .order("prioridade", { ascending: true })
     .order("id", { ascending: true });
 
   if (error) {
@@ -62,7 +52,7 @@ export async function buscarCanaisPorCategoria(categoria) {
     return [];
   }
 
-  return data || [];
+  return prepararLista(data || []);
 }
 
 export async function buscarDestaqueHome() {
@@ -71,6 +61,7 @@ export async function buscarDestaqueHome() {
     .select("*")
     .eq("ativo", true)
     .eq("destaque_home", true)
+    .order("prioridade", { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -79,5 +70,71 @@ export async function buscarDestaqueHome() {
     return null;
   }
 
-  return data;
+  return prepararCanal(data);
+}
+
+export async function buscarCanalInteligente(categoria = "Futebol") {
+  const canais = await buscarCanaisPorCategoria(categoria);
+
+  if (!canais.length) return null;
+
+  for (const canal of canais) {
+    const canalPreparado = await resolverCanalAutomatico(canal);
+
+    if (canalPreparado?.url_embed) {
+      return canalPreparado;
+    }
+  }
+
+  return canais[0] || null;
+}
+
+export async function resolverCanalAutomatico(canal) {
+  if (!canal) return null;
+
+  if (
+    canal.plataforma === "youtube" &&
+    canal.auto_live === true &&
+    canal.canal_id
+  ) {
+    const live = await buscarLiveDoCanalYoutube(canal.canal_id);
+
+    if (live?.embedUrl) {
+      return {
+        ...canal,
+        url_embed: live.embedUrl,
+        titulo_transmissao: live.titulo,
+        descricao: canal.descricao || live.descricao,
+        thumbnail: live.thumbnail,
+        status: "online",
+      };
+    }
+
+    return {
+      ...canal,
+      url_embed:
+        youtubeWatchToEmbed(canal.url_fallback) ||
+        youtubeWatchToEmbed(canal.url_embed),
+      status: "offline",
+    };
+  }
+
+  return prepararCanal(canal);
+}
+
+function prepararLista(lista) {
+  return lista.map(prepararCanal);
+}
+
+function prepararCanal(canal) {
+  if (!canal) return null;
+
+  if (canal.plataforma === "youtube") {
+    return {
+      ...canal,
+      url_embed: youtubeWatchToEmbed(canal.url_embed),
+    };
+  }
+
+  return canal;
 }

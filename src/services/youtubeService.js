@@ -1,18 +1,38 @@
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
-console.log("================================");
-console.log("YOUTUBE API KEY:", API_KEY);
-console.log("================================");
+export function youtubeWatchToEmbed(url) {
+  if (!url) return null;
 
-export async function buscarLiveDoCanal(channelId) {
+  let videoId = null;
+
+  if (url.includes("youtube.com/watch?v=")) {
+    videoId = url.split("v=")[1]?.split("&")[0];
+  }
+
+  if (url.includes("youtu.be/")) {
+    videoId = url.split("youtu.be/")[1]?.split("?")[0];
+  }
+
+  if (url.includes("youtube.com/embed/")) {
+    return url;
+  }
+
+  if (!videoId) return url;
+
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
+export function youtubeEmbedFromVideoId(videoId) {
+  if (!videoId) return null;
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
+export async function buscarLiveDoCanalYoutube(channelId) {
+  if (!API_KEY || !channelId) return null;
+
   try {
-    if (!API_KEY) {
-      console.error("API KEY do YouTube não encontrada.");
-      return null;
-    }
-
     const url =
-      `https://www.googleapis.com/youtube/v3/search` +
+      "https://www.googleapis.com/youtube/v3/search" +
       `?part=snippet` +
       `&channelId=${channelId}` +
       `&eventType=live` +
@@ -23,77 +43,28 @@ export async function buscarLiveDoCanal(channelId) {
     const response = await fetch(url);
     const data = await response.json();
 
-    console.log("LIVE STATUS:", response.status);
-    console.log("LIVE DATA:", data);
-
     if (!response.ok) {
-      console.error("Erro YouTube Live:", data);
+      console.error("Erro YouTube API:", data);
       return null;
     }
 
-    if (!data.items?.length) {
-      return null;
-    }
+    const item = data.items?.[0];
 
-    const live = data.items[0];
+    if (!item?.id?.videoId) return null;
 
     return {
-      videoId: live.id.videoId,
-      titulo: live.snippet.title,
-      thumbnail: live.snippet.thumbnails?.high?.url,
+      videoId: item.id.videoId,
+      titulo: item.snippet?.title || "Transmissão ao vivo",
+      descricao: item.snippet?.description || "",
+      thumbnail:
+        item.snippet?.thumbnails?.high?.url ||
+        item.snippet?.thumbnails?.medium?.url ||
+        item.snippet?.thumbnails?.default?.url ||
+        null,
+      embedUrl: youtubeEmbedFromVideoId(item.id.videoId),
     };
   } catch (error) {
-    console.error("Erro YouTube Live:", error);
+    console.error("Erro ao buscar live do YouTube:", error);
     return null;
-  }
-}
-
-export async function buscarTopMusicasBrasil() {
-  try {
-    if (!API_KEY) {
-      console.error("API KEY do YouTube não encontrada.");
-      return [];
-    }
-
-    const url =
-      `https://www.googleapis.com/youtube/v3/search` +
-      `?part=snippet` +
-      `&q=musica brasil 2026` +
-      `&type=video` +
-      `&videoCategoryId=10` +
-      `&maxResults=5` +
-      `&regionCode=BR` +
-      `&key=${API_KEY}`;
-
-    console.log("URL TOP MUSICAS:", url);
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    console.log("STATUS TOP MUSICAS:", response.status);
-    console.log(JSON.stringify(data, null, 2));
-
-    if (!response.ok) {
-      console.error("Erro YouTube:", data);
-      return [];
-    }
-
-    if (!data.items?.length) {
-      return [];
-    }
-
-    return data.items.map((item) => ({
-      id: item.id.videoId,
-      titulo: item.snippet.title,
-      canal: item.snippet.channelTitle,
-      thumbnail:
-        item.snippet.thumbnails?.medium?.url ||
-        item.snippet.thumbnails?.high?.url ||
-        item.snippet.thumbnails?.default?.url,
-      link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-    }));
-  } catch (error) {
-    console.error("Erro Top Músicas:", error);
-    return [];
   }
 }
