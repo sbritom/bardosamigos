@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { buscarCanais } from "../../services/tvService";
+import { buscarTodosCanais } from "../../services/tvService";
 
 export default function AdminTvPage() {
   const [canais, setCanais] = useState([]);
@@ -11,7 +11,7 @@ export default function AdminTvPage() {
 
   async function carregar() {
     setCarregando(true);
-    const lista = await buscarCanais();
+    const lista = await buscarTodosCanais();
     setCanais(lista);
     setCarregando(false);
   }
@@ -60,9 +60,13 @@ export default function AdminTvPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  {canal.ativo && (
+                  {canal.ativo ? (
                     <span className="px-3 py-1 rounded-full bg-green-600 text-xs font-black">
                       ATIVO
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-full bg-zinc-700 text-zinc-200 text-xs font-black">
+                      INATIVO
                     </span>
                   )}
 
