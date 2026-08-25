@@ -2,7 +2,7 @@ import PortalLayout from "../components/layout/PortalLayout";
 import PortalCard from "../components/shared/PortalCard";
 import QuickTile from "../components/shared/QuickTile";
 
-import HeroBar from "../components/home/HeroBar";
+import HeroBar from "../components/Home/HeroBar";
 import ChatCard from "../components/ChatCard";
 import TvAoVivoCard from "../components/tv/TvAoVivoCard";
 import LiveFootballCard from "../components/LiveFootballCard";
