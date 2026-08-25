@@ -38,6 +38,21 @@ export async function buscarCanais() {
   return prepararLista(data || []);
 }
 
+export async function buscarTodosCanais() {
+  const { data, error } = await supabase
+    .from("canais_tv")
+    .select("*")
+    .order("prioridade", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao buscar todos os canais:", error);
+    return [];
+  }
+
+  return prepararLista(data || []);
+}
+
 export async function buscarCanaisPorCategoria(categoria) {
   const { data, error } = await supabase
     .from("canais_tv")
