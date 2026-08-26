@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import AdminLoginPage from "../pages/AdminLoginPage";
 import {
   observarAutenticacaoAdmin,
   obterSessaoAdmin,
@@ -45,9 +46,16 @@ export default function AdminGuard() {
   }
 
   if (!sessao) {
+    const naRaizAdmin =
+      location.pathname === "/admin" || location.pathname === "/admin/";
+
+    if (naRaizAdmin) {
+      return <AdminLoginPage />;
+    }
+
     return (
       <Navigate
-        to="/admin/login"
+        to="/admin"
         replace
         state={{ from: `${location.pathname}${location.search}` }}
       />
