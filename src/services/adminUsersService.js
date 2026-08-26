@@ -36,3 +36,10 @@ export async function redefinirSenhaAdministrador(userId, novaSenha) {
     password: novaSenha,
   });
 }
+
+export async function gerarCodigoRecuperacao(userId) {
+  return executarAdminUsers({
+    action: "generate_recovery_code",
+    ...(userId ? { userId } : {}),
+  });
+}

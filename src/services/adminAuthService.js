@@ -111,3 +111,30 @@ export async function alterarMinhaSenha(senhaAtual, novaSenha) {
 
   return true;
 }
+
+export async function recuperarSenhaAdmin(usuario, codigoRecuperacao, novaSenha) {
+  const username = normalizarUsuario(usuario);
+  usuarioParaEmailTecnico(username);
+
+  if (novaSenha.length < 8 || novaSenha.length > 128) {
+    throw new Error("A nova senha precisa ter entre 8 e 128 caracteres.");
+  }
+
+  const { data, error } = await supabase.functions.invoke("admin-recover", {
+    body: {
+      username,
+      recoveryCode: codigoRecuperacao,
+      newPassword: novaSenha,
+    },
+  });
+
+  if (error) {
+    throw new Error("Não foi possível processar a recuperação agora.");
+  }
+
+  if (!data?.ok) {
+    throw new Error(data?.error || "Não foi possível redefinir a senha.");
+  }
+
+  return data;
+}

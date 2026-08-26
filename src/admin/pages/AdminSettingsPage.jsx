@@ -5,6 +5,7 @@ import {
   obterSessaoAdmin,
   sairAdmin,
 } from "../../services/adminAuthService";
+import { gerarCodigoRecuperacao } from "../../services/adminUsersService";
 
 export default function AdminSettingsPage() {
   const navigate = useNavigate();
@@ -14,6 +15,9 @@ export default function AdminSettingsPage() {
   const [confirmacao, setConfirmacao] = useState("");
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [codigoRecuperacao, setCodigoRecuperacao] = useState("");
+  const [gerandoCodigo, setGerandoCodigo] = useState(false);
+  const [mensagemCodigo, setMensagemCodigo] = useState("");
 
   useEffect(() => {
     obterSessaoAdmin().then((sessao) => {
@@ -52,6 +56,33 @@ export default function AdminSettingsPage() {
     } catch (error) {
       setErro(error.message || "Não foi possível alterar a senha.");
       setSalvando(false);
+    }
+  }
+
+  async function gerarCodigo() {
+    setMensagemCodigo("");
+    setGerandoCodigo(true);
+
+    try {
+      const data = await gerarCodigoRecuperacao();
+      setCodigoRecuperacao(data.recoveryCode || "");
+      setMensagemCodigo(
+        "Novo código gerado. O código anterior deixou de funcionar. Guarde este código em local seguro."
+      );
+    } catch (error) {
+      setMensagemCodigo(error.message || "Não foi possível gerar o código.");
+    } finally {
+      setGerandoCodigo(false);
+    }
+  }
+
+  async function copiarCodigo() {
+    if (!codigoRecuperacao) return;
+    try {
+      await navigator.clipboard.writeText(codigoRecuperacao);
+      setMensagemCodigo("Código copiado. Guarde-o em local seguro.");
+    } catch {
+      setMensagemCodigo("Copie o código manualmente e guarde-o em local seguro.");
     }
   }
 
@@ -130,6 +161,43 @@ export default function AdminSettingsPage() {
             </button>
           </div>
         </form>
+
+        <section className="bar-card p-5 lg:col-span-2">
+          <h2 className="font-black bar-gold-text mb-2">Código de recuperação</h2>
+          <p className="text-sm text-zinc-400 mb-4">
+            Use este código se esquecer sua senha. Ao gerar um novo código, o anterior é invalidado.
+          </p>
+
+          {mensagemCodigo && (
+            <div className="mb-4 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3 text-sm text-zinc-300">
+              {mensagemCodigo}
+            </div>
+          )}
+
+          {codigoRecuperacao && (
+            <div className="mb-4 flex flex-col md:flex-row gap-2">
+              <div className="flex-1 rounded-xl border border-yellow-500/25 bg-black px-4 py-3 font-mono text-lg tracking-wider text-yellow-300 break-all">
+                {codigoRecuperacao}
+              </div>
+              <button
+                type="button"
+                onClick={copiarCodigo}
+                className="rounded-xl border border-yellow-500/25 px-4 py-3 font-bold hover:border-yellow-500"
+              >
+                Copiar
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={gerarCodigo}
+            disabled={gerandoCodigo}
+            className="bar-gold-btn rounded-xl px-4 py-3 disabled:opacity-60"
+          >
+            {gerandoCodigo ? "Gerando..." : "Gerar novo código de recuperação"}
+          </button>
+        </section>
       </div>
     </div>
   );

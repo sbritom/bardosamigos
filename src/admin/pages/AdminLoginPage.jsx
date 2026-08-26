@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   entrarAdmin,
   obterSessaoAdmin,
@@ -96,6 +96,13 @@ export default function AdminLoginPage() {
               {enviando ? "Entrando..." : "Entrar"}
             </button>
           </form>
+
+          <Link
+            to="/admin/recuperar"
+            className="mt-4 block text-center text-sm font-bold text-yellow-400 hover:text-yellow-300"
+          >
+            Esqueci minha senha
+          </Link>
 
           <p className="text-xs text-zinc-500 text-center mt-5">
             O painel usa apenas nome de usuário e senha. Nenhum e-mail é solicitado.

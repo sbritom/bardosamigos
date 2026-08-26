@@ -13,6 +13,7 @@ import AdminGuard from "./admin/components/AdminGuard";
 import AdminLayout from "./admin/layouts/AdminLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminLoginPage from "./admin/pages/AdminLoginPage";
+import AdminRecoverPage from "./admin/pages/AdminRecoverPage";
 import AdminSettingsPage from "./admin/pages/AdminSettingsPage";
 import AdminTvPage from "./admin/pages/AdminTvPage";
 import AdminUsersPage from "./admin/pages/AdminUsersPage";
@@ -37,6 +38,7 @@ function AppContent() {
         <Route path="/editor-fotos" element={<EditorFotosPage />} />
 
         <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/recuperar" element={<AdminRecoverPage />} />
 
         <Route path="/admin" element={<AdminGuard />}>
           <Route element={<AdminLayout />}>

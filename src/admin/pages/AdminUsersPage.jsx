@@ -15,6 +15,7 @@ export default function AdminUsersPage() {
   const [resetSenha, setResetSenha] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
+  const [codigoCriado, setCodigoCriado] = useState("");
 
   useEffect(() => {
     carregar();
@@ -37,6 +38,7 @@ export default function AdminUsersPage() {
     event.preventDefault();
     setErro("");
     setMensagem("");
+    setCodigoCriado("");
 
     if (novaSenha.length < 8) {
       setErro("A senha precisa ter pelo menos 8 caracteres.");
@@ -49,11 +51,15 @@ export default function AdminUsersPage() {
     }
 
     try {
-      await criarAdministrador(novoUsuario, novaSenha);
+      const resultado = await criarAdministrador(novoUsuario, novaSenha);
       setNovoUsuario("");
       setNovaSenha("");
       setConfirmacao("");
-      setMensagem("Administrador cadastrado com sucesso.");
+      setCodigoCriado(resultado.recoveryCode || "");
+      setMensagem(
+        resultado.warning ||
+          "Administrador cadastrado com sucesso. Guarde o código de recuperação exibido abaixo."
+      );
       await carregar();
     } catch (error) {
       setErro(error.message);
@@ -79,6 +85,16 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function copiarCodigo() {
+    if (!codigoCriado) return;
+    try {
+      await navigator.clipboard.writeText(codigoCriado);
+      setMensagem("Código copiado. Entregue-o ao novo administrador e oriente-o a guardar em local seguro.");
+    } catch {
+      setMensagem("Copie o código manualmente e entregue-o ao novo administrador.");
+    }
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-black bar-gold-text mb-2">👤 Usuários</h1>
@@ -89,6 +105,27 @@ export default function AdminUsersPage() {
       {mensagem && (
         <div className="mb-4 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-300">
           {mensagem}
+        </div>
+      )}
+
+      {codigoCriado && (
+        <div className="mb-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+          <div className="text-sm font-black text-yellow-300 mb-2">Código de recuperação do novo administrador</div>
+          <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex-1 rounded-xl border border-yellow-500/25 bg-black px-4 py-3 font-mono text-lg tracking-wider text-yellow-300 break-all">
+              {codigoCriado}
+            </div>
+            <button
+              type="button"
+              onClick={copiarCodigo}
+              className="rounded-xl border border-yellow-500/25 px-4 py-3 font-bold hover:border-yellow-500"
+            >
+              Copiar
+            </button>
+          </div>
+          <p className="text-xs text-zinc-400 mt-2">
+            Esse código serve para recuperar a conta sem e-mail. Guarde-o em local seguro.
+          </p>
         </div>
       )}
 
