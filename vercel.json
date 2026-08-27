@@ -1,9 +1,10 @@
 {
-  "rewrites": [
-    { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/tv", "destination": "/index.html" },
-    { "source": "/barcoins", "destination": "/index.html" },
-    { "source": "/barstudio", "destination": "/index.html" },
-    { "source": "/editor-fotos", "destination": "/index.html" }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://www.radiobardosamigos.com.br",
+      "permanent": true
+    }
   ]
 }
