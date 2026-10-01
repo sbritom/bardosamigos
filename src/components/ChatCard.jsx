@@ -7,11 +7,11 @@ export default function ChatCard() {
 
       <div className="flex-1 rounded-xl overflow-hidden bg-black border border-zinc-800">
         <iframe
-          src="https://xat.com/embed/chat.php#id=160094644&gn=BarDosAmigos"
+          src="https://xat.com/embed/chat.php#id=212581131&gn=Imortal0800"
           className="w-full h-full"
           frameBorder="0"
           scrolling="no"
-          title="BarDosAmigos"
+          title="IMORTAL0800"
         />
       </div>
     </div>
