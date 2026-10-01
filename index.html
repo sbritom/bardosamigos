@@ -1,16 +1,471 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="escuro">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="robots" content="noindex,nofollow" />
-  <title>Projeto migrado | Bar dos Amigos</title>
+  <meta name="description" content="IMORTAL0800 — rádio, TV, futebol, games e comunidade em um só lugar." />
+  <meta name="theme-color" content="#0c1118" />
+  <title>IMORTAL0800 | Portal da Comunidade</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --fundo: #0c1118;
+      --topo: #0a0f15;
+      --superficie: #121923;
+      --superficie-2: #17212d;
+      --superficie-3: #1c2836;
+      --borda: #253241;
+      --texto: #f1f4f7;
+      --texto-2: #a7b1bc;
+      --destaque: #173a63;
+      --destaque-2: #275f99;
+      --destaque-suave: #1b456f;
+      --sombra: 0 10px 28px rgba(0,0,0,.18);
+    }
+
+    html[data-theme="claro"] {
+      color-scheme: light;
+      --fundo: #c9d0d8;
+      --topo: #d5dbe1;
+      --superficie: #dce1e6;
+      --superficie-2: #e5e9ed;
+      --superficie-3: #cfd6dd;
+      --borda: #b4bec8;
+      --texto: #141b24;
+      --texto-2: #566473;
+      --destaque: #173a63;
+      --destaque-2: #275f99;
+      --destaque-suave: #c6d4e3;
+      --sombra: 0 10px 28px rgba(21,38,55,.10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: background .2s ease, color .2s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .container { width: min(1440px, calc(100% - 32px)); margin: 0 auto; }
+
+    .topo {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--topo) 94%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--borda);
+    }
+    .barra-topo {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .marca {
+      flex: 0 0 auto;
+      font-size: 25px;
+      font-weight: 850;
+      letter-spacing: -.8px;
+    }
+    .marca span { color: #376fa9; }
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .menu a, .acao-topo {
+      padding: 9px 12px;
+      border-radius: 9px;
+      color: var(--texto-2);
+      font-size: 14px;
+      font-weight: 650;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .menu a:hover, .menu a.ativo, .acao-topo:hover {
+      color: var(--texto);
+      background: var(--superficie-2);
+    }
+    .menu a.ativo { box-shadow: inset 0 -2px 0 var(--destaque-2); }
+    .acoes { display: flex; align-items: center; gap: 8px; }
+    .idioma { color: var(--texto); }
+    .entrar {
+      background: var(--destaque) !important;
+      color: #fff !important;
+      padding-inline: 16px !important;
+    }
+    .menu-mobile { display: none; }
+
+    main { padding: 18px 0 24px; }
+
+    .radio {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(300px, .85fr) minmax(180px, .45fr);
+      align-items: center;
+      gap: 22px;
+      min-height: 92px;
+      padding: 15px 20px;
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      box-shadow: var(--sombra);
+    }
+    .rotulo {
+      margin-bottom: 4px;
+      color: #6c9ccd;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .radio h1 { margin: 0 0 3px; font-size: 20px; line-height: 1.2; }
+    .radio p { margin: 0; color: var(--texto-2); font-size: 13px; }
+    .controle-radio { display: flex; align-items: center; gap: 12px; }
+    .play {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 50%;
+      background: var(--destaque);
+      color: #fff;
+      cursor: pointer;
+    }
+    .play:hover { background: var(--destaque-2); }
+    .play svg { width: 17px; height: 17px; fill: currentColor; }
+    .volume { width: 100%; accent-color: var(--destaque-2); }
+    .pedidos {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 20px;
+      border-left: 1px solid var(--borda);
+    }
+    .pedidos strong { display: block; font-size: 13px; }
+    .pedidos small { color: var(--texto-2); }
+
+    .principal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .painel {
+      min-width: 0;
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--sombra);
+    }
+    .painel-cabecalho {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--borda);
+    }
+    .icone {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--destaque-suave);
+      color: #9cc4eb;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+    html[data-theme="claro"] .icone { color: var(--destaque); }
+    .painel-cabecalho h2 { margin: 0 0 2px; font-size: 17px; }
+    .painel-cabecalho p { margin: 0; color: var(--texto-2); font-size: 12px; }
+    .conteudo-painel { height: 430px; background: var(--topo); }
+    .conteudo-painel iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    .tv-vazia {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(23,58,99,.12), transparent 55%),
+        var(--topo);
+    }
+    .tv-vazia .tv-centro { max-width: 360px; }
+    .tv-simbolo {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      border: 1px solid var(--borda);
+      background: var(--superficie-2);
+      font-size: 24px;
+    }
+    .tv-vazia h3 { margin: 0 0 6px; font-size: 17px; }
+    .tv-vazia p { margin: 0; color: var(--texto-2); font-size: 13px; line-height: 1.55; }
+
+    .atalhos {
+      margin-top: 14px;
+      padding: 14px;
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+    }
+    .secao-titulo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .secao-titulo h2 { margin: 0; font-size: 16px; }
+    .secao-titulo p { margin: 2px 0 0; color: var(--texto-2); font-size: 12px; }
+    .grade-atalhos { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .atalho {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 13px;
+      border: 1px solid var(--borda);
+      border-radius: 11px;
+      background: var(--superficie-2);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .atalho:hover { transform: translateY(-1px); border-color: #3c536b; }
+    .atalho .emoji { font-size: 20px; }
+    .atalho strong { display: block; font-size: 13px; }
+    .atalho small { color: var(--texto-2); font-size: 11px; }
+    .seta { margin-left: auto; color: var(--texto-2); }
+
+    footer {
+      padding: 18px 0 24px;
+      color: var(--texto-2);
+      font-size: 11px;
+    }
+    .rodape {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--borda);
+      padding-top: 16px;
+    }
+
+    @media (max-width: 940px) {
+      .barra-topo { min-height: 62px; }
+      .menu { display: none; }
+      .menu-mobile { display: inline-flex; margin-left: auto; }
+      .radio { grid-template-columns: 1fr 1fr; }
+      .pedidos { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--borda); padding: 11px 0 0; }
+      .grade-atalhos { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .container { width: min(100% - 20px, 1440px); }
+      .acoes .idioma, .acoes .entrar { display: none; }
+      main { padding-top: 10px; }
+      .radio { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
+      .pedidos { grid-column: auto; }
+      .principal { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+      .conteudo-painel { height: 390px; }
+      .atalhos { margin-top: 10px; padding: 11px; }
+      .grade-atalhos { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .atalho { min-height: 60px; }
+      .rodape { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 460px) {
+      .marca { font-size: 21px; }
+      .grade-atalhos { grid-template-columns: 1fr; }
+      .painel-cabecalho p { display: none; }
+      .conteudo-painel { height: 365px; }
+    }
+  </style>
 </head>
 <body>
-  <main>
-    <h1>Projeto migrado</h1>
-    <p>O Bar dos Amigos agora usa apenas o projeto oficial.</p>
-    <p><a href="https://www.radiobardosamigos.com.br">Acessar o site oficial</a></p>
+  <header class="topo">
+    <div class="container barra-topo">
+      <a class="marca" href="#inicio" aria-label="IMORTAL0800">IMORTAL<span>0800</span></a>
+
+      <nav class="menu" aria-label="Navegação principal">
+        <a class="ativo" href="#inicio">Início</a>
+        <a href="#tv">TV</a>
+        <a href="#radio">Rádio</a>
+        <a href="#futebol">Futebol</a>
+        <a href="#games">Games</a>
+        <a href="#comunidade">Comunidade</a>
+      </nav>
+
+      <button class="acao-topo menu-mobile" type="button" aria-label="Abrir menu">☰</button>
+      <div class="acoes">
+        <button class="acao-topo idioma" type="button" aria-label="Idioma atual">🌐 PT</button>
+        <button class="acao-topo" id="tema" type="button" aria-label="Alternar modo claro e escuro">☀️</button>
+        <a class="acao-topo entrar" href="#entrar">Entrar</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio" class="container">
+    <section class="radio" id="radio" aria-label="Rádio IMORTAL0800">
+      <div>
+        <div class="rotulo">Rádio IMORTAL0800</div>
+        <h1>Tocando agora</h1>
+        <p id="status-radio">Clique em reproduzir para ouvir a rádio.</p>
+      </div>
+
+      <div class="controle-radio">
+        <button class="play" id="play-radio" type="button" aria-label="Reproduzir rádio">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <input class="volume" id="volume-radio" aria-label="Volume da rádio" type="range" min="0" max="1" value="0.75" step="0.05" />
+      </div>
+
+      <a class="pedidos" href="#pedidos">
+        <span class="icone" aria-hidden="true">♫</span>
+        <span><strong>Pedidos</strong><small>Peça sua música</small></span>
+      </a>
+      <audio id="audio-radio" preload="none" src="https://s01.svrdedicado.org:7956/stream"></audio>
+    </section>
+
+    <section class="principal" aria-label="Destaques da comunidade">
+      <article class="painel" id="comunidade">
+        <div class="painel-cabecalho">
+          <div class="icone" aria-hidden="true">💬</div>
+          <div>
+            <h2>Chat ao vivo</h2>
+            <p>Converse, conheça pessoas e participe da comunidade.</p>
+          </div>
+        </div>
+        <div class="conteudo-painel">
+          <iframe
+            title="Chat IMORTAL0800"
+            src="https://xat.com/embed/chat.php#id=212581131&gn=Imortal0800"
+            allow="microphone; camera"
+            loading="lazy">
+          </iframe>
+        </div>
+      </article>
+
+      <article class="painel" id="tv">
+        <div class="painel-cabecalho">
+          <div class="icone" aria-hidden="true">▣</div>
+          <div>
+            <h2>TV ao vivo</h2>
+            <p>Assista à programação sem sair do portal.</p>
+          </div>
+        </div>
+        <div class="conteudo-painel">
+          <div class="tv-vazia">
+            <div class="tv-centro">
+              <div class="tv-simbolo">▶</div>
+              <h3>Área da TV preservada</h3>
+              <p>O visual já está pronto. O player atual da TV será conectado aqui assim que recuperarmos a fonte usada no portal.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="atalhos" aria-labelledby="explorar">
+      <div class="secao-titulo">
+        <div>
+          <h2 id="explorar">Explore o IMORTAL0800</h2>
+          <p>Acesse rapidamente as principais áreas do portal.</p>
+        </div>
+      </div>
+
+      <div class="grade-atalhos">
+        <a class="atalho" id="futebol" href="#futebol">
+          <span class="emoji">⚽</span><span><strong>Futebol</strong><small>Jogos, placares e palpites</small></span><span class="seta">›</span>
+        </a>
+        <a class="atalho" id="games" href="#games">
+          <span class="emoji">🎮</span><span><strong>Games</strong><small>Notícias e campeonatos</small></span><span class="seta">›</span>
+        </a>
+        <a class="atalho" href="#radio">
+          <span class="emoji">🎵</span><span><strong>Rádio</strong><small>Ouça e peça sua música</small></span><span class="seta">›</span>
+        </a>
+        <a class="atalho" href="#comunidade">
+          <span class="emoji">👥</span><span><strong>Comunidade</strong><small>Entre no chat ao vivo</small></span><span class="seta">›</span>
+        </a>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <div class="container rodape">
+      <strong>IMORTAL0800</strong>
+      <span>© 2026 IMORTAL0800. Todos os direitos reservados.</span>
+    </div>
+  </footer>
+
+  <script>
+    const raiz = document.documentElement;
+    const botaoTema = document.getElementById('tema');
+    const audio = document.getElementById('audio-radio');
+    const botaoPlay = document.getElementById('play-radio');
+    const volume = document.getElementById('volume-radio');
+    const statusRadio = document.getElementById('status-radio');
+    const iconePlay = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+    const iconePause = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+
+    const temaSalvo = localStorage.getItem('imortal0800-tema');
+    const prefereClaro = window.matchMedia('(prefers-color-scheme: light)').matches;
+    aplicarTema(temaSalvo || (prefereClaro ? 'claro' : 'escuro'));
+
+    function aplicarTema(tema) {
+      raiz.dataset.theme = tema;
+      botaoTema.textContent = tema === 'escuro' ? '☀️' : '🌙';
+      botaoTema.setAttribute('aria-label', tema === 'escuro' ? 'Ativar modo claro' : 'Ativar modo escuro');
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', tema === 'escuro' ? '#0c1118' : '#c9d0d8');
+    }
+
+    botaoTema.addEventListener('click', () => {
+      const novoTema = raiz.dataset.theme === 'escuro' ? 'claro' : 'escuro';
+      localStorage.setItem('imortal0800-tema', novoTema);
+      aplicarTema(novoTema);
+    });
+
+    volume.addEventListener('input', () => { audio.volume = Number(volume.value); });
+    audio.volume = Number(volume.value);
+
+    botaoPlay.addEventListener('click', async () => {
+      if (audio.paused) {
+        try {
+          await audio.play();
+          botaoPlay.innerHTML = iconePause;
+          botaoPlay.setAttribute('aria-label', 'Pausar rádio');
+          statusRadio.textContent = 'Rádio IMORTAL0800 ao vivo.';
+        } catch {
+          statusRadio.textContent = 'Não foi possível iniciar a rádio. Tente novamente.';
+        }
+      } else {
+        audio.pause();
+        botaoPlay.innerHTML = iconePlay;
+        botaoPlay.setAttribute('aria-label', 'Reproduzir rádio');
+        statusRadio.textContent = 'Rádio pausada.';
+      }
+    });
+
+    audio.addEventListener('error', () => {
+      statusRadio.textContent = 'A transmissão está indisponível neste momento.';
+      botaoPlay.innerHTML = iconePlay;
+    });
+  </script>
 </body>
 </html>
